@@ -1,0 +1,3 @@
+﻿from pathlib import Path
+p=Path('index.html');s=p.read_text(encoding='utf-8');s=s.replace('<link rel="stylesheet" href="css/notifications.css">','<link rel="stylesheet" href="css/notifications.css"><link rel="stylesheet" href="css/settings.css">');s=s.replace('<div class="toast"',Path('settings-panel.html').read_text(encoding='utf-8')+'<div class="toast"');s=s.replace('<script src="js/notifications.js"></script>','<script src="js/notifications.js"></script><script src="js/settings.js"></script>');p.write_text(s,encoding='utf-8')
+p=Path('js/home.js');s=p.read_text(encoding='utf-8');s=s.replace('else toast(`${nav.dataset.nav}頁面待下一批截圖製作`)','else if(nav.dataset.nav!==\'設定\')toast(`${nav.dataset.nav}頁面待下一批截圖製作`)');p.write_text(s,encoding='utf-8')

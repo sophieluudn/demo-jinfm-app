@@ -1,0 +1,27 @@
+#course-intro.poetry-intro{padding:0;color:#111;line-height:1.75}
+.intro-facts{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px;padding:18px 18px 20px;background:#f9f9f9;margin-top:13px;font-size:15px}
+.intro-facts>div{display:flex;align-items:center;gap:9px;min-width:0;line-height:26px;white-space:nowrap}.intro-facts i{font-size:18px;flex-shrink:0}
+#course-intro .intro-section{border-top:16px solid #fafafa;padding:16px 15px 15px}
+#course-intro .intro-section:first-of-type{border-top:0}
+#course-intro .intro-section>h2{position:relative;color:#196e80;font-size:18px;font-weight:500;line-height:26px;margin:0 0 18px;padding-left:11px}
+#course-intro .intro-section>h2:before{content:'';position:absolute;left:0;top:4px;bottom:3px;width:4px;border-radius:3px;background:#19778c}
+.intro-expandable{position:relative;overflow:hidden;font-size:15px;line-height:26px}
+#course-intro .intro-expandable p{margin:0 0 18px;font-size:15px;line-height:26px;color:#111}
+#course-intro .intro-expandable h3{font-size:15px;font-weight:500;color:#19778c;margin:0 0 15px;line-height:24px}
+#course-intro .intro-expandable h4{font-size:15px;font-weight:500;margin:20px 0 15px;line-height:26px}
+#course-intro .intro-expandable h4:first-child{margin-top:0}
+.intro-expandable:not(.expanded):after{content:'';position:absolute;left:0;right:0;bottom:0;height:65px;background:linear-gradient(to bottom,#ffffff00,#fff);pointer-events:none}
+.intro-description{max-height:242px}.intro-units{max-height:270px}.intro-purchase{max-height:242px}.intro-biography{max-height:242px}
+.intro-expandable.expanded{max-height:none}
+.intro-expand-button{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px auto 0;background:#f6f6f6;border-radius:24px;padding:7px 24px;font-size:13px;color:#858585;line-height:20px;min-height:34px}
+.intro-expand-button i{font-size:12px}.intro-expand-button[aria-expanded="true"] i{transform:rotate(180deg)}
+.intro-units ul{padding:0 0 0 11px;margin:0;list-style:'・'}.intro-units li{padding-left:0;margin-bottom:4px;line-height:26px}
+.intro-purchase p:nth-last-child(2){margin-top:48px!important;color:#777!important}
+.speaker-card{display:flex;align-items:center;gap:12px;padding:0 0 20px;margin:0 0 18px;border-bottom:1px solid #f1f1f1}
+.speaker-card>img{width:92px;height:92px;object-fit:cover;border-radius:50%;flex-shrink:0}
+#course-intro .speaker-card h3{font-size:20px;font-weight:500;line-height:28px;margin:0 0 8px}
+#course-intro .speaker-card p{font-size:13px;line-height:18px;margin:0;color:#111}
+#course-intro .intro-speaker{padding-bottom:135px}
+.course-show-intro .course-sticky{padding-bottom:0}
+@media(max-width:350px){.intro-facts{font-size:13px;padding-left:15px;padding-right:15px;gap:12px 5px}.intro-facts>div{gap:6px}.speaker-card>img{width:80px;height:80px}#course-intro .speaker-card p{font-size:11px}}
+.intro-facts>div span{overflow:hidden;text-overflow:ellipsis}.speaker-fallback{font-size:92px;color:#b5c5c9;line-height:1;flex-shrink:0}.intro-demo-note{color:#858585!important;font-size:12px!important}

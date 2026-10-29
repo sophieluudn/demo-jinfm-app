@@ -1,0 +1,12 @@
+﻿from pathlib import Path
+p=Path('js/course.js');s=p.read_text(encoding='utf-8')
+s=s.replace("function currentEpisodes(){return selected.img==='palace'?knownEpisodes:selected.img==='east-west'?eastWestEpisodes:[['【精華試聽】'+selected.title,'2026/05/19','03:34']]}","function isOwned(){try{return selected.img==='east-west'||JSON.parse(localStorage.getItem('jinfm-demo-purchases')||'[]').includes(selected.img)}catch{return selected.img==='east-west'}}\n  function currentEpisodes(){const known=selected.img==='palace'?knownEpisodes:selected.img==='east-west'?eastWestEpisodes:[['【精華試聽】'+selected.title,'2026/05/19','03:34']];return Array.from({length:Math.max(1,selected.episodes)},(_,i)=>known[i]||[`單元 ${String(i+1).padStart(2,'0')}：${selected.title}（示範）`,'2026/05/19','10:00'])}")
+s=s.replace("index===1||selected?.img==='east-west'","index===1||isOwned()").replace("index!==1&&selected.img!=='east-west'","index!==1&&!isOwned()").replace("e.index===1||selected.img==='east-west'","e.index===1||isOwned()")
+s=s.replace("if(range.value==='last')indexed=[];","indexed=indexed.slice(Number(range.value)||0,(Number(range.value)||0)+20);")
+s=s.replace("panel.classList.toggle('course-owned',id==='east-west');","panel.classList.toggle('course-owned',isOwned());").replace("document.querySelector('#course-buy').disabled=id==='east-west';","document.querySelector('#course-buy').disabled=isOwned();")
+s=s.replace("range.value='first';descending=false;", "range.innerHTML=Array.from({length:Math.ceil(Math.max(1,selected.episodes)/20)},(_,i)=>`<option value=\"${i*20}\">${i*20+1}–${Math.min((i+1)*20,Math.max(1,selected.episodes))}</option>`).join('');range.value='0';descending=false;")
+s=s.replace("    range.querySelector('[value=\"last\"]').hidden=selected.episodes<=20;",'')
+s=s.replace("      if(range.value==='last'){toast('此範圍沒有可下載的音頻');return}\n      startDownload(currentEpisodes().map((_,i)=>i+1).filter(i=>i===1||selected.img==='east-west'));", "      startDownload(currentEpisodes().map((_,i)=>i+1).slice(Number(range.value)||0,(Number(range.value)||0)+20).filter(i=>i===1||isOwned()));")
+s=s.replace("if(!queue.length){toast('本頁音頻已下載');return}","if(!queue.length){toast(indices.length?'本頁音頻已下載':'購買課程後即可下載此頁音頻');return}")
+s=s.replace("  document.querySelector('#course-buy').onclick=", "  window.addEventListener('demo-purchased',e=>{if(selected?.img===e.detail.id){panel.classList.add('course-owned');document.querySelector('#course-buy').disabled=true;renderCatalog()}});\n  document.querySelector('#course-buy').onclick=")
+p.write_text(s,encoding='utf-8')

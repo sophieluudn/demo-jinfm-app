@@ -1,0 +1,7 @@
+<section id="mini-player" aria-label="迷你播放器" hidden>
+  <button class="mini-close" id="mini-close" aria-label="關閉播放器"><i class="ph ph-x-circle" aria-hidden="true"></i></button>
+  <div class="mini-info"><h2 id="mini-title"></h2><p id="mini-author"></p><div class="mini-timeline"><time id="mini-elapsed">00:00</time><input id="mini-seek" type="range" min="0" max="145" value="0" step="1" aria-label="播放進度"><time id="mini-duration">02:25</time></div></div>
+  <button id="mini-expand" aria-label="展開播放控制" aria-expanded="false" aria-controls="mini-extra-controls"><i class="ph ph-caret-up" aria-hidden="true"></i></button>
+  <button id="mini-toggle" aria-label="暫停"><i class="ph-fill ph-pause" aria-hidden="true"></i></button>
+  <div id="mini-extra-controls" hidden><button id="mini-rewind" aria-label="後退 15 秒"><i class="ph ph-skip-back" aria-hidden="true"></i>15 秒</button><span>模擬播放</span><button id="mini-forward" aria-label="快轉 15 秒">15 秒<i class="ph ph-skip-forward" aria-hidden="true"></i></button></div>
+</section>

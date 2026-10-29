@@ -1,0 +1,17 @@
+{
+  "name": "demo-jinfm-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "python -m http.server 4173"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@phosphor-icons/web": "^2.1.2",
+    "simple-icons": "^16.36.0"
+  }
+}

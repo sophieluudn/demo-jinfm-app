@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('index.html');s=p.read_text(encoding='utf-8');s=s.replace('<div class="toast"',Path('mini-player.html').read_text(encoding='utf-8')+'<div class="toast"');s=s.replace('<link rel="stylesheet" href="css/course-extras.css">','<link rel="stylesheet" href="css/course-extras.css"><link rel="stylesheet" href="css/mini-player.css">');s=s.replace('js/course.js?v=intro-all-20261029','js/course.js?v=mini-player-20261029');p.write_text(s,encoding='utf-8')

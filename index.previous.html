@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>一刻鯨選 - APP 模擬 Demo</title>
+    <style>
+      /* --- 基礎重置 --- */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+      body {
+        background-color: #e5e5e5;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC",
+          "Microsoft JhengHei", sans-serif;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* --- 手機外框 --- */
+      .phone-mockup {
+        width: 390px;
+        height: 844px;
+        background: #fff;
+        border-radius: 40px;
+        border: 12px solid #222;
+        box-shadow:
+          0 20px 50px rgba(0, 0, 0, 0.2),
+          inset 0 0 0 2px #111;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .notch {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 25px;
+        background: #222;
+        border-bottom-left-radius: 15px;
+        border-bottom-right-radius: 15px;
+        z-index: 1000;
+      }
+
+      /* --- APP 容器 --- */
+      .app-container {
+        flex: 1;
+        overflow-y: auto;
+        background: #fff;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* =========================================
+     首頁視圖
+     ========================================= */
+      #home-view {
+        display: block;
+        padding-bottom: 90px;
+        background: #f5f6f8;
+        height: 100%;
+        overflow-y: auto;
+      }
+      .header {
+        position: sticky;
+        top: 0;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 45px 20px 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 100;
+      }
+      .header h1 {
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        color: #111;
+      }
+      .header-icons {
+        display: flex;
+        gap: 18px;
+        color: #1b7b8c;
+      }
+      .header-icons svg {
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+      }
+      .banner {
+        margin: 10px 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        height: 160px;
+        background: #e8ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .banner-mock {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(to right, #f4f4f4, #d9e2e6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        font-size: 14px;
+        font-weight: bold;
+      }
+      .filters {
+        display: flex;
+        gap: 10px;
+        padding: 15px 20px;
+        overflow-x: auto;
+      }
+      .filter-btn {
+        white-space: nowrap;
+        padding: 8px 18px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #fff;
+        color: #1b7b8c;
+        font-size: 15px;
+        font-weight: bold;
+      }
+      .filter-btn.active {
+        border-color: #1b7b8c;
+      }
+      .section {
+        padding: 15px 20px;
+      }
+      .section-title {
+        font-size: 22px;
+        font-weight: 900;
+        color: #111;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .section-title .arrow {
+        font-size: 18px;
+        color: #1b7b8c;
+        font-weight: normal;
+      }
+      .section-subtitle {
+        font-size: 13px;
+        color: #888;
+        margin-top: 6px;
+        margin-bottom: 12px;
+      }
+      .card-scroll {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+      }
+      .card {
+        min-width: 190px;
+        width: 190px;
+        background: #fff;
+        border-radius: 12px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        cursor: pointer;
+        transition: transform 0.1s;
+      }
+      .card:active {
+        transform: scale(0.98);
+      }
+      .card-img {
+        width: 100%;
+        height: 110px;
+        border-radius: 8px;
+        object-fit: cover;
+        margin-bottom: 10px;
+      }
+      .card-tag {
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        background: #e0f2f1;
+        color: #00796b;
+        align-self: flex-start;
+      }
+      .card-title {
+        font-size: 15px;
+        font-weight: bold;
+        line-height: 1.4;
+        margin-top: 5px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .card-desc {
+        font-size: 12px;
+        color: #888;
+        margin-top: 6px;
+      }
+      .card-author {
+        font-size: 12px;
+        color: #555;
+        margin-top: 8px;
+      }
+      .card-episodes {
+        font-size: 12px;
+        color: #999;
+        margin-top: 4px;
+      }
+      .card-footer {
+        margin-top: auto;
+        padding-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .price-current {
+        color: #1b7b8c;
+        font-weight: bold;
+        font-size: 16px;
+      }
+      .price-old {
+        color: #b0b0b0;
+        text-decoration: line-through;
+        font-size: 12px;
+        margin-left: 4px;
+      }
+
+      /* =========================================
+     課程詳情視圖
+     ========================================= */
+      #course-view {
+        display: none;
+        height: 100%;
+        background: #fff;
+        position: relative;
+        overflow: hidden;
+      }
+      .course-fixed-header {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: #fff;
+        z-index: 100;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 0 15px 8px;
+        padding-top: 35px;
+        box-sizing: content-box;
+      }
+      .header-btn-left {
+        background: #fff;
+        border-radius: 20px;
+        padding: 6px 14px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+      }
+      .header-btn-left svg {
+        width: 18px;
+        height: 18px;
+        color: #333;
+      }
+      .header-btn-right-group {
+        display: flex;
+        gap: 10px;
+      }
+
+      /* 愛心按鈕預設樣式 */
+      .header-btn-right {
+        background: #fff;
+        border-radius: 50%;
+        width: 34px;
+        height: 34px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .header-btn-right svg {
+        width: 18px;
+        height: 18px;
+        color: #333;
+        transition: all 0.2s;
+      }
+
+      /* 愛心點擊後的樣式 (紅色實心) */
+      .header-btn-right.active {
+        background: #ffe5e5;
+      }
+      .header-btn-right.active svg {
+        fill: #ff4d4f;
+        stroke: #ff4d4f;
+      }
+
+      .course-scroll-area {
+        height: 100%;
+        overflow-y: auto;
+        padding-bottom: 80px;
+        padding-top: 60px;
+      }
+      .course-hero-img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        display: block;
+      }
+      .course-header-info {
+        padding: 20px;
+        border-bottom: 8px solid #f5f6f8;
+      }
+      .course-tag {
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: #e0f2f1;
+        color: #00796b;
+        display: inline-block;
+        margin-bottom: 8px;
+      }
+      .course-main-title {
+        font-size: 22px;
+        font-weight: 900;
+        color: #111;
+        line-height: 1.4;
+      }
+      .course-sub-desc {
+        font-size: 14px;
+        color: #888;
+        margin-top: 6px;
+      }
+      .course-price-wrap {
+        margin-top: 15px;
+      }
+      .course-price-label {
+        font-size: 13px;
+        color: #333;
+        font-weight: bold;
+      }
+      .course-price-row {
+        display: flex;
+        align-items: baseline;
+        margin-top: 4px;
+      }
+      .course-price-big {
+        font-size: 32px;
+        font-weight: bold;
+        color: #f39c12;
+      }
+      .course-price-small {
+        font-size: 14px;
+        color: #aaa;
+        text-decoration: line-through;
+        margin-left: 10px;
+      }
+
+      .sticky-tabs-container {
+        position: sticky;
+        top: 60px;
+        z-index: 90;
+        background: #fff;
+        padding: 10px 20px;
+        border-bottom: 1px solid transparent;
+        transition: border-bottom 0.2s;
+      }
+      .sticky-tabs-container.is-sticky {
+        border-bottom: 1px solid #eee;
+      }
+      .course-tabs {
+        display: flex;
+        background: #f0f2f5;
+        border-radius: 20px;
+        padding: 3px;
+      }
+      .course-tab {
+        flex: 1;
+        text-align: center;
+        padding: 8px 0;
+        font-size: 14px;
+        color: #666;
+        border-radius: 18px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .course-tab.active {
+        background: #1b7b8c;
+        color: #fff;
+        font-weight: bold;
+      }
+
+      /* 目錄樣式 */
+      #tab-catalog {
+        display: none;
+        background: #fff;
+      }
+      .catalog-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .toolbar-left {
+        display: flex;
+        gap: 10px;
+      }
+      .toolbar-btn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        background: #f5f6f8;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+      }
+      .toolbar-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+      .toolbar-right {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
+      }
+      .toolbar-right-actions {
+        display: flex;
+        gap: 10px;
+      }
+      .toolbar-text-btn {
+        background: none;
+        border: none;
+        font-size: 13px;
+        color: #333;
+        cursor: pointer;
+      }
+      .toolbar-text-btn:first-child {
+        color: #999;
+      }
+      .toolbar-size {
+        font-size: 11px;
+        color: #999;
+      }
+      .chapter-list {
+        padding: 0 20px;
+      }
+      .chapter-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 15px;
+        padding: 20px 0;
+        border-bottom: 1px solid #f0f0f0;
+      }
+      .chapter-item:last-child {
+        border-bottom: none;
+      }
+      .chapter-icon {
+        width: 24px;
+        height: 24px;
+        flex-shrink: 0;
+        margin-top: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .chapter-icon.play {
+        color: #1b7b8c;
+      }
+      .chapter-icon.lock {
+        color: #ccc;
+      }
+      .chapter-icon svg {
+        width: 100%;
+        height: 100%;
+      }
+      .chapter-info {
+        flex: 1;
+      }
+      .chapter-title {
+        font-size: 15px;
+        font-weight: bold;
+        color: #333;
+        line-height: 1.5;
+        margin-bottom: 6px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .chapter-meta {
+        font-size: 12px;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .chapter-meta svg {
+        width: 12px;
+        height: 12px;
+      }
+      .chapter-actions {
+        display: flex;
+        gap: 15px;
+        margin-top: 2px;
+      }
+      .chapter-actions svg {
+        width: 18px;
+        height: 18px;
+        color: #333;
+        cursor: pointer;
+      }
+
+      .bottom-action-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        background: #fff;
+        border-top: 1px solid #eee;
+        padding-bottom: 20px;
+        z-index: 100;
+      }
+      .action-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        font-size: 12px;
+        color: #1b7b8c;
+        cursor: pointer;
+        background: #fff;
+        border: none;
+        padding: 10px 0;
+      }
+      .action-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+      .buy-btn {
+        flex: 2;
+        background: #1b7b8c;
+        color: #fff;
+        border: none;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* === Toast 提示彈窗 === */
+      .toast-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        pointer-events: none; /* 點擊穿透 */
+      }
+      .toast-overlay.show {
+        display: flex;
+      }
+      .toast-box {
+        background: rgba(60, 60, 60, 0.85); /* 深灰色半透明背景 */
+        color: #fff;
+        padding: 25px 40px;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        animation: fadeInOut 2s ease forwards;
+      }
+
+      /* Toast 內的鯨魚線條圖 */
+      .toast-icon {
+        width: 60px;
+        height: 60px;
+      }
+      .toast-icon svg {
+        width: 100%;
+        height: 100%;
+        stroke: #fff;
+      }
+      .toast-text {
+        font-size: 16px;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      /* Toast 動畫：淡入 -> 停留 -> 淡出 */
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+          transform: scale(0.8);
+        }
+        15% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        80% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+      }
+
+      /* 響應式 */
+      @media (max-width: 480px) {
+        body {
+          background-color: #fff;
+          display: block;
+        }
+        .phone-mockup {
+          width: 100%;
+          height: 100vh;
+          border-radius: 0;
+          border: none;
+          box-shadow: none;
+        }
+        .notch {
+          display: none;
+        }
+        .course-fixed-header {
+          padding-top: 15px;
+          height: 50px;
+        }
+        .course-scroll-area {
+          padding-top: 50px;
+        }
+        .sticky-tabs-container {
+          top: 50px;
+        }
+        .header {
+          padding-top: 20px;
+        }
+        .tab-bar,
+        .bottom-action-bar {
+          position: fixed;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone-mockup">
+      <div class="notch"></div>
+
+      <div class="app-container">
+        <!-- 首頁視圖 -->
+        <div id="home-view">
+          <header class="header">
+            <h1>一刻鯨選</h1>
+            <div class="header-icons">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+              <svg
+                id="open-search-btn"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </div>
+          </header>
+
+          <div class="banner">
+            <div class="banner-mock">感知的美學 - 趙孝萱主講</div>
+          </div>
+
+          <div class="filters">
+            <div class="filter-btn active">全部內容</div>
+            <div class="filter-btn">文史哲</div>
+            <div class="filter-btn">商業管理</div>
+            <div class="filter-btn">休閒生活</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">
+              熱銷排行榜 <span class="arrow">〉</span>
+            </div>
+            <div class="section-subtitle">不可錯過的暢銷課程全明星</div>
+            <div class="card-scroll">
+              <!-- 點擊進入課程頁 -->
+              <div class="card" onclick="openCourse()">
+                <img
+                  src="https://picsum.photos/400/300?random=3"
+                  class="card-img"
+                />
+                <span class="card-tag">語音</span>
+                <div class="card-title">
+                  感知的美學：三宅一生、杉本博司、坂本龍一
+                </div>
+                <div class="card-desc">打破界線的藝術實驗</div>
+                <div class="card-author">👤 趙孝萱</div>
+                <div class="card-episodes">12集</div>
+                <div class="card-footer">
+                  <div>
+                    <span class="price-current">650點</span
+                    ><span class="price-old">1000點</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 課程詳情視圖 -->
+        <div id="course-view">
+          <!-- 頂部導航 -->
+          <div class="course-fixed-header">
+            <div class="header-btn-left" onclick="closeCourse()">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+              >
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </div>
+
+            <div class="header-btn-right-group">
+              <!-- 愛心按鈕 (綁定點擊事件) -->
+              <div
+                class="header-btn-right"
+                id="heart-btn"
+                onclick="toggleFavorite()"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+                  ></path>
+                </svg>
+              </div>
+              <!-- 分享按鈕 -->
+              <div class="header-btn-right">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                  <polyline points="16 6 12 2 8 6"></polyline>
+                  <line x1="12" y1="2" x2="12" y2="15"></line>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- 滾動區域 -->
+          <div class="course-scroll-area" id="course-scroll-area">
+            <img
+              src="https://picsum.photos/800/500?random=3"
+              class="course-hero-img"
+            />
+
+            <div class="course-header-info">
+              <span class="course-tag">語音</span>
+              <div class="course-main-title">
+                感知的美學：三宅一生、杉本博司、坂本龍一
+              </div>
+              <div class="course-sub-desc">打破界線的藝術實驗</div>
+
+              <div class="course-price-wrap">
+                <div class="course-price-label">購買價</div>
+                <div class="course-price-row">
+                  <span class="course-price-big">650點</span>
+                  <span class="course-price-small">1000點</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 切換 -->
+            <div class="sticky-tabs-container" id="sticky-tabs">
+              <div class="course-tabs">
+                <div
+                  class="course-tab active"
+                  id="tab-btn-intro"
+                  onclick="switchTab('intro', this)"
+                >
+                  簡介
+                </div>
+                <div
+                  class="course-tab"
+                  id="tab-btn-catalog"
+                  onclick="switchTab('catalog', this)"
+                >
+                  目錄
+                </div>
+              </div>
+            </div>
+
+            <!-- 簡介 Tab -->
+            <div id="tab-intro">
+              <div style="padding: 20px; color: #666">課程簡介內容...</div>
+            </div>
+
+            <!-- 目錄 Tab (預設顯示) -->
+            <div id="tab-catalog" style="display: block">
+              <div class="catalog-toolbar">
+                <div class="toolbar-left">
+                  <button class="toolbar-btn" style="padding: 8px 10px">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <line x1="4" y1="7" x2="20" y2="7"></line>
+                      <line x1="4" y1="17" x2="20" y2="17"></line>
+                      <polyline points="10 3 8 7 12 7"></polyline>
+                      <polyline points="14 21 16 17 12 17"></polyline>
+                    </svg>
+                  </button>
+                </div>
+                <div class="toolbar-right">
+                  <div class="toolbar-right-actions">
+                    <button class="toolbar-text-btn">刪除全部</button>
+                    <button class="toolbar-text-btn" style="color: #333">
+                      下載本頁音頻
+                    </button>
+                  </div>
+                  <div class="toolbar-size">74 MB</div>
+                </div>
+              </div>
+              <div class="chapter-list">
+                <div class="chapter-item">
+                  <div class="chapter-icon play">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    >
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polygon
+                        points="10 8 16 12 10 16 10 8"
+                        fill="currentColor"
+                      ></polygon>
+                    </svg>
+                  </div>
+                  <div class="chapter-info">
+                    <div class="chapter-title">
+                      01 【精華試聽】感知的美學：三宅一生、杉本博司、坂本龍一
+                    </div>
+                    <div class="chapter-meta">
+                      <span>2026/05/19</span
+                      ><span
+                        style="display: flex; align-items: center; gap: 4px"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        03:34</span
+                      >
+                    </div>
+                  </div>
+                  <div class="chapter-actions">
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                      ></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <path
+                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                      ></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                </div>
+                <div class="chapter-item">
+                  <div class="chapter-icon lock">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path
+                        d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"
+                      />
+                    </svg>
+                  </div>
+                  <div class="chapter-info">
+                    <div class="chapter-title">
+                      02 導言：日式當代美學的感官之旅
+                    </div>
+                    <div class="chapter-meta">
+                      <span>2026/05/19</span
+                      ><span
+                        style="display: flex; align-items: center; gap: 4px"
+                        ><svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        >
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        12:16</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 底部購買列 -->
+          <div class="bottom-action-bar">
+            <button class="action-btn">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <polygon points="5 3 19 12 5 21 5 3"></polygon></svg
+              >試閱
+            </button>
+            <button class="action-btn">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+              >
+                <rect x="3" y="8" width="18" height="4" rx="1"></rect>
+                <path d="M12 8v13"></path>
+                <path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path>
+                <path
+                  d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"
+                ></path></svg
+              >贈送朋友
+            </button>
+            <button class="buy-btn">購買</button>
+          </div>
+        </div>
+      </div>
+      <!-- app-container 結束 -->
+
+      <!-- 愛心收藏 Toast 提示框 -->
+      <div class="toast-overlay" id="favorite-toast">
+        <div class="toast-box">
+          <div class="toast-icon">
+            <!-- 手繪風格鯨魚圖標 -->
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M2 12c0-3.3 2.7-6 6-6 2.1 0 3.9 1.1 5 2.7 1.1-1.6 2.9-2.7 5-2.7 3.3 0 6 2.7 6 6v1c0 2.8-2.2 5-5 5h-1v-1h-5v1H7c-2.8 0-5-2.2-5-5v-1z"
+              ></path>
+              <path
+                d="M18 14a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"
+                fill="currentColor"
+              ></path>
+              <path d="M2 12c0 2.8 2.2 5 5 5h1"></path>
+            </svg>
+          </div>
+          <div class="toast-text">已加入收藏</div>
+        </div>
+      </div>
+    </div>
+    <!-- phone-mockup 結束 -->
+
+    <script>
+      // === 頁面切換 ===
+      function openCourse() {
+        document.getElementById("home-view").style.display = "none";
+        document.getElementById("course-view").style.display = "block";
+      }
+      function closeCourse() {
+        document.getElementById("course-view").style.display = "none";
+        document.getElementById("home-view").style.display = "block";
+      }
+
+      // === 課程 Tab 切換 ===
+      function switchTab(tabName, element) {
+        document
+          .querySelectorAll(".course-tab")
+          .forEach((t) => t.classList.remove("active"));
+        element.classList.add("active");
+
+        if (tabName === "intro") {
+          document.getElementById("tab-intro").style.display = "block";
+          document.getElementById("tab-catalog").style.display = "none";
+        } else {
+          document.getElementById("tab-intro").style.display = "none";
+          document.getElementById("tab-catalog").style.display = "block";
+        }
+      }
+
+      // === 點擊愛心加入收藏功能 ===
+      let isFavorite = false;
+      function toggleFavorite() {
+        const heartBtn = document.getElementById("heart-btn");
+        const toast = document.getElementById("favorite-toast");
+
+        isFavorite = !isFavorite;
+
+        if (isFavorite) {
+          // 加入收藏：變紅色，顯示 Toast
+          heartBtn.classList.add("active");
+
+          // 移除舊的動畫類別，重新觸發動畫
+          toast.classList.remove("show");
+          void toast.offsetWidth; // 觸發 reflow
+          toast.classList.add("show");
+
+          // 2秒後自動隱藏 Toast
+          setTimeout(() => {
+            toast.classList.remove("show");
+          }, 2000);
+        } else {
+          // 取消收藏：變回原樣
+          heartBtn.classList.remove("active");
+        }
+      }
+    </script>
+  </body>
+</html>

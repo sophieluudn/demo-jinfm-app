@@ -1,0 +1,43 @@
+<section id="settings-panel" aria-label="設定" hidden>
+  <div class="settings-page" data-settings-page="main">
+    <div class="settings-header"><h2>設定</h2></div>
+    <div class="settings-scroll">
+      <div class="account-profile"><span class="account-avatar" role="img" aria-label="預設會員頭像"><i class="ph-fill ph-user" aria-hidden="true"></i></span><h1>未登入</h1><button class="account-login" data-settings-to="login">登入</button></div>
+      <div class="wallet"><div class="wallet-copy"><div class="wallet-top"><span>錢包餘額 <b>0點</b></span></div><p>加值沒入帳？請嘗試<button id="wallet-refresh">重新整理</button></p></div><button class="wallet-topup" data-settings-to="login">加值</button></div>
+      <div class="settings-menu">
+        <button data-settings-to="downloads"><i class="ph ph-download-simple" aria-hidden="true"></i><span>下載管理</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+        <button data-settings-to="login"><i class="ph ph-envelope-simple" aria-hidden="true"></i><span>紅包</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+        <button data-settings-to="other"><img src="assets/settings-icon.png" alt=""><span>其他設定</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="settings-page" data-settings-page="downloads" hidden>
+    <div class="settings-header"><button class="settings-back" data-settings-back aria-label="返回設定"><i class="ph ph-caret-left" aria-hidden="true"></i></button><h2>下載管理</h2></div>
+    <div class="settings-scroll download-body">
+      <h3>手機容量</h3>
+      <div class="storage-bar" role="img" aria-label="示範手機容量：已使用 92.4 GB，一刻鯨選 0 MB，可用 27.8 GB"><span></span></div>
+      <div class="storage-legend"><span><i></i>已使用 92.4 GB</span><span><i></i>一刻鯨選 0 MB</span><span><i></i>可用 27.8 GB</span></div>
+      <div class="download-tabs" role="tablist" aria-label="下載課程類別"><button role="tab" aria-selected="true" aria-controls="download-empty" id="download-purchased">購買</button><button role="tab" aria-selected="false" aria-controls="download-empty" id="download-subscribed" tabindex="-1">訂閱</button><button role="tab" aria-selected="false" aria-controls="download-empty" id="download-borrowed" tabindex="-1">借聽</button></div>
+      <div class="download-empty" id="download-empty" role="tabpanel" aria-labelledby="download-purchased"><img src="assets/downloads-empty.png" alt="戴耳機的鯨魚與下載資料夾"><p>您尚未下載音頻喔！</p></div>
+    </div>
+  </div>
+  <div class="settings-page login-page" data-settings-page="login" hidden>
+    <div class="settings-header"><button class="settings-close" data-settings-back aria-label="關閉登入"><i class="ph ph-x" aria-hidden="true"></i></button><h2>登入</h2></div>
+    <div class="settings-scroll login-body">
+      <details class="login-card legacy-card"><summary>老朋友（尚未綁定udn會員）<i class="ph ph-caret-down" aria-hidden="true"></i></summary><p class="legacy-copy">因應業務移轉，未來僅提供綁定 udn 會員帳號完整服務。請選擇您原有登入方式，並儘速完成 udn 會員綁定。</p><div class="legacy-auth"><button class="udn" data-auth-provider="udn" aria-label="使用原有 udn 帳號綁定"><img src="assets/login-udn.png" alt=""></button><button data-auth-provider="Google" aria-label="使用原有 Google 帳號綁定"><img src="assets/login-google.svg" alt=""></button><button class="mobile" data-auth-provider="手機號碼" aria-label="使用原有手機號碼綁定"><i class="ph ph-device-mobile" aria-hidden="true"></i><small>手機號碼</small></button><button class="facebook" data-auth-provider="Facebook" aria-label="使用原有 Facebook 帳號綁定"><img src="assets/login-facebook.svg" alt=""></button><button class="apple" data-auth-provider="Apple" aria-label="使用原有 Apple 帳號綁定"><img src="assets/login-apple.svg" alt=""></button></div></details>
+      <section class="login-card"><h3>新朋友（註冊新會員）</h3><p>成為 udn 會員，以使用本服務。</p><button class="udn-action" data-login-preview>註冊 udn 會員</button></section>
+      <section class="login-card"><h3>老朋友（已綁定udn會員）</h3><p>以 udn 會員帳號登入，完整使用本服務。</p><button class="udn-action" data-login-preview>會員登入</button></section>
+      <button class="guest-login" data-settings-back>訪客登入</button><p class="login-terms">登入代表您閱讀並同意【<a href="https://www.udngroup.com/members/service" target="_blank" rel="noopener noreferrer">服務條款</a>】</p>
+    </div>
+  </div>
+  <div class="settings-page" data-settings-page="other" hidden>
+    <div class="settings-header"><button class="settings-back" data-settings-back aria-label="返回設定"><i class="ph ph-caret-left" aria-hidden="true"></i></button><h2>其他設定</h2></div>
+    <div class="settings-scroll other-body">
+      <button class="other-row push-row" id="push-preference"><span>推播通知<small>請允許手機系統通知，重要訊息不漏接</small></span><span class="push-status">ON</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+      <div class="other-row"><span id="wifi-label">僅用 Wi-Fi 播放</span><button class="settings-switch" id="wifi-switch" role="switch" aria-checked="false" aria-labelledby="wifi-label"><span></span></button></div>
+      <div class="other-row"><span>外觀選擇</span><div class="appearance-options" role="group" aria-label="外觀選擇"><button data-appearance="dark" aria-pressed="false">深海版</button><button data-appearance="light" aria-pressed="true" class="active">日光版</button></div></div>
+      <a class="other-row" href="https://www.udngroup.com/members/service" target="_blank" rel="noopener noreferrer"><span>服務條款</span><i class="ph ph-caret-right" aria-hidden="true"></i></a>
+      <div class="app-info"><img src="assets/app-icon.png" alt="一刻鯨選 App 圖示"><div><a href="mailto:jinfmservice@udngroup.com">與我們聯絡</a><button id="share-app">分享 App</button></div><p>版本 v2.12.0</p></div>
+    </div>
+  </div>
+</section>

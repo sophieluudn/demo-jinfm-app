@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>一刻鯨選｜影音課程</title><link rel="stylesheet" href="node_modules/@phosphor-icons/web/src/regular/style.css"><link rel="stylesheet" href="node_modules/@phosphor-icons/web/src/fill/style.css"><link rel="stylesheet" href="css/home.css?v=remaining-20261029"><link rel="stylesheet" href="css/search.css?v=remaining-20261029"><link rel="stylesheet" href="css/notifications.css?v=remaining-20261029"><link rel="stylesheet" href="css/settings.css?v=remaining-20261029"><link rel="stylesheet" href="css/terms-browser.css?v=remaining-20261029"><link rel="stylesheet" href="css/login-sheet.css?v=remaining-20261029"><link rel="stylesheet" href="css/course.css?v=remaining-20261029"><link rel="stylesheet" href="css/course-intro.css?v=remaining-20261029"><link rel="stylesheet" href="css/course-extras.css?v=remaining-20261029"><link rel="stylesheet" href="css/mini-player.css?v=remaining-20261029"><link rel="stylesheet" href="css/remaining-flows.css?v=remaining-20261029"><link rel="stylesheet" href="css/coupons.css"><link rel="stylesheet" href="css/coupon-rules.css"></head>
+<body><div class="phone"><div class="status" aria-hidden="true"><span>15:11 <i class="ph-fill ph-bell-slash"></i></span><span><i class="ph-fill ph-cell-signal-full"></i> <i class="ph-fill ph-wifi-high"></i> <b>65</b></span></div><header><h1>一刻鯨選</h1><div><button id="notifications-open" aria-label="通知，1 則未讀"><i class="ph ph-bell" aria-hidden="true"></i><span id="notification-badge" class="notification-badge" aria-hidden="true">1</span></button><button aria-label="搜尋課程" id="search-open"><i class="ph ph-magnifying-glass"></i></button></div></header><main id="home-scroll"><div class="hero"><img src="assets/banner.jpg" alt="感知的美學，趙孝萱主講"></div><nav class="filters" aria-label="課程分類"></nav><div id="sections"></div><footer class="more"><h2>內容不只這些</h2><button id="more-button">看更多內容</button><img src="assets/whale.jpg" alt="一刻鯨選鯨魚"></footer></main><nav class="bottom-nav" aria-label="主要導覽"><button class="selected" aria-current="page" data-nav="首頁"><i class="ph-fill ph-house"></i><span>首頁</span></button><button data-nav="我聽"><i class="ph ph-headphones"></i><span>我聽</span></button><button data-nav="訂閱"><i class="ph ph-crown-simple"></i><span>訂閱</span></button><button data-nav="借聽"><i class="ph ph-armchair"></i><span>借聽</span></button><button data-nav="設定"><i class="ph ph-user"></i><span>設定</span></button></nav><section id="search-panel" aria-label="搜尋" hidden>
+  <div class="search-top">
+    <form id="search-form" role="search">
+      <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+      <input type="search" enterkeyhint="search" autocomplete="off" placeholder="搜尋內容關鍵字、主講老師" aria-label="搜尋內容關鍵字、主講老師">
+      <button type="button" id="search-clear" aria-label="清除搜尋內容" hidden><i class="ph-fill ph-x-circle" aria-hidden="true"></i></button>
+    </form>
+    <button id="search-close">取消</button>
+  </div>
+  <div id="search-empty">
+    <img src="assets/search-empty.png" alt="戴著耳機的鯨魚與搜尋資料夾">
+    <p>各種精彩有聲內容等待你來挖掘！<br>想聽什麼，快點輸入關鍵字搜尋吧</p>
+  </div>
+  <div id="search-content" hidden>
+    <nav class="search-sort" aria-label="搜尋結果排序">
+      <button id="sort-default" class="active" aria-pressed="true">預設排序</button>
+      <button id="sort-price" aria-label="依價格由低到高排序" aria-pressed="false">價格<img src="assets/icon_filter_pricone_off.png" alt=""></button>
+    </nav>
+    <p id="search-summary" aria-live="polite"></p>
+    <div id="search-results"></div>
+  </div>
+  <div id="search-keyboard" aria-label="模擬鍵盤">
+    <div class="keyboard-suggestions" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="key-row" data-letters="QWERTYUIOP"></div>
+    <div class="key-row middle" data-letters="ASDFGHJKL"></div>
+    <div class="key-row"><button type="button" data-key="shift" aria-label="切換大小寫"><i class="ph-fill ph-arrow-fat-up"></i></button><div class="key-letters" data-letters="ZXCVBNM"></div><button type="button" data-key="backspace" aria-label="刪除字元"><i class="ph ph-backspace"></i></button></div>
+    <div class="key-row last"><button type="button" data-key="numbers" aria-label="切換數字鍵盤">123</button><button type="button" data-key="language" aria-label="切換中文示範輸入"><i class="ph ph-smiley"></i></button><button type="button" data-key="space" aria-label="空白鍵"></button><button type="button" data-key="search" aria-label="送出搜尋" disabled><i class="ph ph-magnifying-glass"></i></button></div>
+    <div class="keyboard-bottom"><button type="button" data-key="language" aria-label="切換中文示範輸入"><i class="ph ph-globe"></i></button><button type="button" data-key="microphone" aria-label="語音輸入"><i class="ph ph-microphone"></i></button></div>
+  </div>
+</section><!-- Source snippet inserted into index.html. Keep rendered content in index.html authoritative. -->
+<section id="notifications-panel" aria-label="通知" hidden>
+  <div class="notification-header">
+    <button id="notifications-back" class="notification-back" aria-label="返回"><i class="ph ph-caret-left" aria-hidden="true"></i></button>
+    <h2 id="notifications-heading">通知</h2>
+    <button id="notifications-mark-all" class="notification-mark-all">全部已讀</button>
+  </div>
+  <div id="notification-list" class="notification-list">
+    <button id="notification-item" class="notification-item">
+      <span id="notification-unread" class="notification-unread" aria-hidden="true"></span>
+      <span class="notification-label">優惠活動</span>
+      <h3 class="notification-title">【限時】10/1~10/18 消費滿千，抽《埃及之王》特展門票！</h3>
+      <p class="notification-preview">揭開古埃及文明的神秘面紗，來一場穿越千年的歷史對話。在「一刻鯨選」透過豐富的聽覺饗宴充實自我，更有機會親臨《埃及之王》特展。</p>
+      <time class="notification-date" datetime="2026-10-01">2026/10/01</time>
+      <i class="ph ph-caret-right notification-chevron" aria-hidden="true"></i>
+    </button>
+  </div>
+  <article id="notification-detail" class="notification-detail" aria-label="優惠活動內容" tabindex="-1" hidden>
+    <h1>〖限時〗10/1~10/18 消費滿千，抽《埃及之王》特展門票！</h1>
+    <div class="article-meta"><span class="notification-label">優惠活動</span><time datetime="2026-09-30">2026/09/30</time></div>
+    <img class="announcement-image" src="assets/notification-egypt.png" alt="一刻鯨選消費滿千抽埃及之王特展門票活動">
+    <p>透過一刻鯨選聆聽課程、探索古埃及文明，還能參加抽獎，親自走進《埃及之王》特展。</p>
+    <h2>活動時間</h2>
+    <p>2026/10/1（四）～2026/10/18（日）</p>
+    <h2>如何參加</h2>
+    <ul>
+      <li>活動期間在一刻鯨選網站購課，單筆實付達新臺幣 1,000 元，即具抽獎資格。</li>
+      <li>使用 App 的會員，須先儲值，再兌換總值至少 1,000 元的課程，即可參加。</li>
+    </ul>
+    <h2>抽獎與獎品</h2>
+    <p>共抽出 10 名，每人獲得《埃及之王》特展實體門票 1 張。預定於 2026/10/21（三）完成抽獎，由一刻鯨選提供獎品。</p>
+    <h2>領獎提醒</h2>
+    <ul>
+      <li>中獎消息以 udn 會員登記的 Email 通知；未綁定或資料不正確而無法聯絡，將失去領獎資格。</li>
+      <li>門票僅寄送至臺灣國內地址，資料不完整而退件將不再補寄。</li>
+      <li>獎品不能兌換現金或轉讓。活動可能調整或取消，請以主辦單位後續公告為準。</li>
+    </ul>
+    <p>活動相關問題可聯繫 <a href="mailto:jinfmservice@udngroup.com">jinfmservice@udngroup.com</a>。</p>
+    <p class="article-source">以上依官方活動公告整理。<a href="https://learning.udn.com/jinfm/announcements/382" target="_blank" rel="noopener noreferrer">查看完整官方公告<i class="ph ph-arrow-square-out" aria-hidden="true"></i></a></p>
+  </article>
+</section>
+<section id="settings-panel" aria-label="設定" hidden>
+  <div class="settings-page" data-settings-page="main">
+    <div class="settings-header"><h2>設定</h2></div>
+    <div class="settings-scroll">
+      <div class="account-profile"><span class="account-avatar" role="img" aria-label="預設會員頭像"><i class="ph-fill ph-user" aria-hidden="true"></i></span><h1>未登入</h1><button class="account-login" data-settings-to="login">登入</button></div>
+      <div class="wallet"><div class="wallet-copy"><div class="wallet-top"><span>錢包餘額 <b>0點</b></span></div><p>加值沒入帳？請嘗試<button id="wallet-refresh">重新整理</button></p></div><button class="wallet-topup" data-settings-to="login">加值</button></div>
+      <div class="settings-menu">
+        <button data-settings-to="downloads"><i class="ph ph-download-simple" aria-hidden="true"></i><span>下載管理</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+        <button data-settings-to="login"><i class="ph ph-envelope-simple" aria-hidden="true"></i><span>紅包</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+        <button data-settings-to="other"><img src="assets/settings-icon.png" alt=""><span>其他設定</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+  <div class="settings-page" data-settings-page="downloads" hidden>
+    <div class="settings-header"><button class="settings-back" data-settings-back aria-label="返回設定"><i class="ph ph-caret-left" aria-hidden="true"></i></button><h2>下載管理</h2></div>
+    <div class="settings-scroll download-body">
+      <h3>手機容量</h3>
+      <div class="storage-bar" role="img" aria-label="示範手機容量：已使用 92.4 GB，一刻鯨選 0 MB，可用 27.8 GB"><span></span></div>
+      <div class="storage-legend"><span><i></i>已使用 92.4 GB</span><span><i></i>一刻鯨選 0 MB</span><span><i></i>可用 27.8 GB</span></div>
+      <div class="download-tabs" role="tablist" aria-label="下載課程類別"><button role="tab" aria-selected="true" aria-controls="download-empty" id="download-purchased">購買</button><button role="tab" aria-selected="false" aria-controls="download-empty" id="download-subscribed" tabindex="-1">訂閱</button><button role="tab" aria-selected="false" aria-controls="download-empty" id="download-borrowed" tabindex="-1">借聽</button></div>
+      <div class="download-empty" id="download-empty" role="tabpanel" aria-labelledby="download-purchased"><img src="assets/downloads-empty.png" alt="戴耳機的鯨魚與下載資料夾"><p>您尚未下載音頻喔！</p></div>
+    </div>
+  </div>
+  <div class="settings-page login-page" data-settings-page="login" hidden>
+    <div class="settings-header"><button class="settings-close" data-settings-back aria-label="關閉登入"><i class="ph ph-x" aria-hidden="true"></i></button><h2>登入</h2></div>
+    <div class="settings-scroll login-body">
+      <details class="login-card legacy-card"><summary>老朋友（尚未綁定udn會員）<i class="ph ph-caret-down" aria-hidden="true"></i></summary><p class="legacy-copy">因應業務移轉，未來僅提供綁定 udn 會員帳號完整服務。請選擇您原有登入方式，並儘速完成 udn 會員綁定。</p><div class="legacy-auth"><button class="udn" data-auth-provider="udn" aria-label="使用原有 udn 帳號綁定"><img src="assets/login-udn.png" alt=""></button><button data-auth-provider="Google" aria-label="使用原有 Google 帳號綁定"><img src="assets/login-google.svg" alt=""></button><button class="mobile" data-auth-provider="手機號碼" aria-label="使用原有手機號碼綁定"><i class="ph ph-device-mobile" aria-hidden="true"></i><small>手機號碼</small></button><button class="facebook" data-auth-provider="Facebook" aria-label="使用原有 Facebook 帳號綁定"><img src="assets/login-facebook.svg" alt=""></button><button class="apple" data-auth-provider="Apple" aria-label="使用原有 Apple 帳號綁定"><img src="assets/login-apple.svg" alt=""></button></div></details>
+      <section class="login-card"><h3>新朋友（註冊新會員）</h3><p>成為 udn 會員，以使用本服務。</p><button class="udn-action" data-login-preview>註冊 udn 會員</button></section>
+      <section class="login-card"><h3>老朋友（已綁定udn會員）</h3><p>以 udn 會員帳號登入，完整使用本服務。</p><button class="udn-action" data-login-preview>會員登入</button></section>
+      <button class="guest-login" data-settings-back>訪客登入</button><p class="login-terms">登入代表您閱讀並同意【<a href="https://www.udngroup.com/members/service" target="_blank" rel="noopener noreferrer">服務條款</a>】</p>
+    </div>
+  </div>
+  <div class="settings-page" data-settings-page="other" hidden>
+    <div class="settings-header"><button class="settings-back" data-settings-back aria-label="返回設定"><i class="ph ph-caret-left" aria-hidden="true"></i></button><h2>其他設定</h2></div>
+    <div class="settings-scroll other-body">
+      <button class="other-row push-row" id="push-preference"><span>推播通知<small>請允許手機系統通知，重要訊息不漏接</small></span><span class="push-status">ON</span><i class="ph ph-caret-right" aria-hidden="true"></i></button>
+      <div class="other-row"><span id="wifi-label">僅用 Wi-Fi 播放</span><button class="settings-switch" id="wifi-switch" role="switch" aria-checked="false" aria-labelledby="wifi-label"><span></span></button></div>
+      <div class="other-row"><span>外觀選擇</span><div class="appearance-options" role="group" aria-label="外觀選擇"><button data-appearance="dark" aria-pressed="false">深海版</button><button data-appearance="light" aria-pressed="true" class="active">日光版</button></div></div>
+      <a class="other-row" href="https://www.udngroup.com/members/service" target="_blank" rel="noopener noreferrer"><span>服務條款</span><i class="ph ph-caret-right" aria-hidden="true"></i></a>
+      <div class="app-info"><img src="assets/app-icon.png" alt="一刻鯨選 App 圖示"><div><a href="mailto:jinfmservice@udngroup.com">與我們聯絡</a><button id="share-app">分享 App</button></div><p>版本 v2.12.0</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="terms-browser" aria-label="App 內瀏覽器：udn 會員服務條款" hidden>
+  <div class="inapp-browser-header">
+    <button id="terms-browser-close" aria-label="關閉服務條款"><i class="ph ph-caret-down" aria-hidden="true"></i></button>
+    <span title="udn 會員服務條款 | 聯合報系 United Daily News Group">udn 會員服務條款 | 聯合報系 United Daily News Group</span>
+    <a href="https://www.udngroup.com/members/service" target="_blank" rel="noopener noreferrer" aria-label="在外部瀏覽器開啟服務條款"><i class="ph ph-compass" aria-hidden="true"></i></a>
+  </div>
+  <div class="terms-web-content" tabindex="-1">
+    <div class="terms-site-nav"><img src="assets/udn-group-logo.png" alt="聯合報系 United Daily News Group"><button id="terms-site-menu" aria-label="開啟網站選單" aria-expanded="false" aria-controls="terms-site-links"><i class="ph ph-list" aria-hidden="true"></i></button></div>
+    <nav id="terms-site-links" aria-label="聯合報系網站選單" hidden><a href="https://www.udngroup.com/" target="_blank" rel="noopener noreferrer">聯合報系首頁</a><a href="https://www.udngroup.com/members/service" target="_blank" rel="noopener noreferrer">udn 會員服務條款</a></nav>
+    <div class="terms-article"><div class="article-style font-body1"><div><div>
+<h1 class="content_title">udn 會員服務條款</h1>
+</div>
+<div>
+<p class="text">歡迎您加入成為udn 會員。</p>
+<p>udn 係由『聯合報股份有限公司』與『聯合線上股份有限公司』所合作建置之網路資訊平台，並就其等個別建置、營運部分提供服務予使用者 ( 以下稱 udn 會員服務 )。為避免使用者重複填寫資料及繁複之申請程序，所有申請使用會員服務之使用者 ( 以下稱會員或您 )，只需一次加入會員及同意服務條款與隱私權聲明，即可使用、試用或付費啟用 udn 所提供的各項會員服務。</p>
+<p>本會員條款構成會員與聯合報系各公司間的契約，請您詳細閱讀本會員條款，當您完成相關基本資料提供、註冊驗證程序，開始使用 udn 會員服務時，即視為已知悉、並完全同意本會員條款所有約定。</p>
+<p>udn 有權配合相關服務提供之需求，修改或變更本會員條款內容，其修改或變更將會公布本網站『會員註冊頁』、『會員登入頁』中。udn 經常推出新的服務，亦會更新服務條款及政策，如對會員個人權益較重大影響者，udn 將會透過會員留存的 e-mail 通知，請您隨時注意相關修改與變更。本會員條款修改或變更生效後，您所進行之相關交易活動，將適用修改或變更後之會員條款；若您不同意該等修改或變更，請勿繼續使用 udn 會員服務，修改或變更前之付費服務或交易相關權利義務，不會受到修改或變更之影響。定址會員及企業會員亦應要求其群組內使用者遵守本會員條款。特定產品因具備獨特功能或服務而設有附加條款，若本條款與附加條款有所牴觸時，該服務適用的規定將以附加條款為準。</p>
+<h3 class="content_title">會員服務：</h3>
+<!-- 注意:編號<ol>後可接點<ul>，但點<ul>不可接編號<ol> -->
+<ol class="custom-counter">
+<li><!-- 情況一 -->一旦 udn 完成並確認您的申請後， udn 將提供予您『一般』會員服務內容有：
+	<ol class="custom-counter">
+<li>由聯合報股份有限公司提供之服務：聯合報系教育服務( 聯合報寫作教室、好讀周報、聯合學苑 )、主題旅遊、學生遊學、願景工作室 ( 願景工程專題報導、對外合作、公民沙龍、國際名人論壇、願景開講 )、展覽、表演、聯合報發行展業部的用戶生活+網站所提供的服務（訂報、課程、作文大賽、商品優惠等）、聯合報系健康事業部服務（講座論壇、影音課程）、元氣網AI腦力健身房、遊戲測驗或其他未來可能新增之一般會員服務。</li>
+<li>由聯合線上股份有限公司提供之服務：參加部落格社群、聯合知識庫新聞查詢、參加新聞討論、暫存新聞、追蹤熱門話題與人物、擁有琅琅書店(電子書報刊下載閱讀)服務、udn讀創故事(線上創作及閱讀)服務、女子漾 ( 線上創作 )服務，或其他未來可能新增之一般會員服務。</li>
+</ol>
+</li>
+<li>因會員服務所提供予您之所有相關功能以及其他服務內容，其權益均屬 udn 或其他合法權利人所有，會員除僅得於服務期間內依本會員條款或其他個別服務條款之約定為使用外，不得以任何方式將會員權益轉讓、移轉、出租或出借予其他任何第三人。</li>
+<li>為充分服務會員，會員同意 udn 以 e-mail 、電子報 eDM、廣告信函、型錄、電話訪問、或透過簡訊等，不定期告知 udn 會員服務及聯合報系各項活動及商品資訊。</li>
+<li>會員服務僅依當時所提供之功能及狀態提供服務； udn 並保留新增、修改或取消會員服務內相關系統或功能之全部或一部之權利。</li>
+<li>使用經濟日報網服務，請遵守台灣證券交易所『交易資訊使用管理辦法』等交易資訊管理相關規定。</li>
+</ol>
+</div>
+<div>
+<h3 class="content_title">帳號、密碼與安全性：</h3>
+<ol class="custom-counter">
+<li>在使用會員服務以前，必須經過完整的註冊手續，在註冊過程中您必須填入完整、而且正確的資料。</li>
+<li>您在註冊時可以自行選擇一個您所使用的有效電子信箱或台灣手機號碼作為您的登入識別，並由您自行設定密碼。在使用會員服務過程中，您必須為該登入識別完成後的所有行為負責，因此請妥善保管您的密碼。請勿重複申請帳號，並應以真實資料申請帳號。如有違反者，本網站得暫停或終止您全部或部分帳號。</li>
+<li>您如果發現或懷疑您的登入識別或密碼被其他人冒用或不當使用，請您立即通知本網站管理者，以利本網站儘快採取適當之措施，但上述措施並不意味也不能被解釋為本網站明示或默示對您負有任何形式之賠償或補償之責任或義務。</li>
+</ol>
+</div>
+<div>
+<h3 class="content_title">資料的隱私：</h3>
+<p class="text">您認知並同意當您註冊或使用會員服務時所提供或由伺服器自動蒐集之相關資訊，由 udn 依據中華民國法律及「<a href="https://www.udngroup.com/articles/8ebf4b91-b45c-4e0e-86f1-135ddc9a4b3d" rel="noopener noreferrer" target="_blank">聯合報系網站隱私權聲明</a>」進行您個人資料的蒐集、處理及利用，包括跨國間的傳輸與儲存，請您詳細閱讀上面的連結，以了解我們的作法。本會員服務中如有部分特定服務是與其他合作廠商或夥伴共同經營，如果您不願將個人資料揭露給其他合作伙伴，可以選擇不使用這些特定服務，但如您開始使用這些特定服務，udn 將在資料蒐集或傳輸前明確告知您後，將您的個人資料揭露給該特定服務之合作廠商或夥伴。</p>
+</div>
+<div>
+<h3 class="content_title">資料儲存：</h3>
+<ol class="custom-counter">
+<li>為系統服務之穩定性，udn 會定期備份您所儲存的資料，但我們並不負任何備份儲存之責任，您須自行備份您所提供或發表於會員服務之資料，是您並同意我們不需對刪除的資料或備份儲存失敗的資料負責。</li>
+<li>本會員服務不擔保您所上載的資料將被正常顯示、亦不擔保資料傳輸的正確性；如果您發現本會員服務有錯誤或疏失，請立即通知本網站管理者。</li>
+</ol>
+</div>
+<div>
+<h3 class="content_title">關於圖檔、圖片與其他著作或資料之授權：</h3>
+<ol class="custom-counter">
+<li>為了提供會員更加完善之會員服務，udn 將接洽其他廠商或夥伴提供各種圖檔、圖片或其他著作或資料，供會員得以瀏覽、檢索或使用。但這些圖檔、圖片及其他著作或資料均是由該個別廠商或夥伴所提供，並由該個別廠商或夥伴自行對使用者擔保其合法性。</li>
+<li>會員上載或發表於本會員服務之資料，會員同意授權本網站得為提供本會員服務及宣傳本網站之目的為利用或授權他人利用。</li>
+</ol>
+</div>
+<div>
+<h3 class="content_title">產品交易類服務須知：</h3>
+<p class="text">【註：部份的定型化契約應記載及不得記載事項有特別規定。】</p>
+<ol class="custom-counter">
+<li>一般產品交易類服務須知
+	<ol class="custom-counter">
+<li>當您使用 udn 服務時，即表示您已閱讀瞭解並同意接受本服務條款所有內容。本服務條款得由本公司隨時修訂，修訂後之內容公告於本網站或各該服務專屬網路空間，自該公告所載生效日起生效。如對您權益有重大影響者，並將以電子郵件或手機號碼向您註冊所留存的電子郵件信箱或手機號碼通知您。</li>
+<li>若您未滿二十歲，您應與您的家長(或監護人)閱讀、瞭解並同意本服務條款之所有內容及其後修改變更後，方得使用或繼續使用 udn服務。當您使用或繼續使用 udn服務時，即推定您的家長(或監護人)已閱讀、瞭解並同意接受本服務條款之所有內容及其後修改變更，並已取得每筆交易服務之同意。</li>
+<li>個人資料安全
+		<ol class="custom-counter">
+<li>udn 上所刊登之各類名稱、價格、規格、型號、內容等及其它相關資訊，如由廠商 / 主辦單位及任何與 udn 有合作關係之第三人所提供，udn 僅代為提供服務於會員；會員一旦完成交易程序，就表示向本公司提出要約，願意且接受本約定條款及 udn 網頁上所載明的交易條件或限制，在未得本公司承諾以前，本公司不受該要約之拘束。</li>
+<li>請您依照 udn 網頁上之操作說明進行交易流程，並確實核對您的交易內容是否正確。當您完成交易程序後，交易即已生效，相關交易內容均無法修改，而部分服務網站由系統自動發送電子郵件至您所留存的電子郵件信箱，內容僅為告知已收到您的交易生效通知，並不表示交易已完成或契約已成立。udn 將儘速處理您的交易資料，並保留接受您的訂單成立與否之權利。</li>
+<li>udn 將在確認您的交易相關資料無誤且付款完成後，依您指定之方式處理您的交易資料。您可隨時至 udn 內確認最新資料。</li>
+<li>對於您所留存的資料，udn 除了採用安全交易模式外，並承諾負保密義務，除依法或為完成該筆交易而提供給相關商品或服務之提供廠商或配合廠商以外，不會任意洩漏或提供給第三人。</li>
+<li>為了完成交易，包括付款及交貨等，所有在 udn 進行線上消費的使用者，都必須擔保所留存的資料與事實相符，如果事後有變更，應該即時通知 udn 管理者。</li>
+<li>使用者對於其個人資料、付款資料（包含信用卡資料）等，應妥善保管以避免外洩。</li>
+<li>在下列情況下，udn 有權查看或提供使用者的個人資料給有權機關、或主張其權利受侵害並提出適當證明之第三人：
+			<ul>
+<li>依法令規定、或依司法機關或其他有權機關的命令。</li>
+<li>為執行本約定條款或使用者違反約定條款。</li>
+<li>為維護 udn 系統之正常運作及安全。</li>
+<li>為保護 udn 其他使用者或其他第三人的合法權益。</li>
+</ul>
+</li>
+</ol>
+</li>
+<li>您同意您與 udn 間之關係，將以電子文件作為意思表示之方法，請您務必填寫正確且實際使用之電子郵件，以避免您的權益受損。若您提供的交易相關資料不完整或不正確，udn 有權單方取消您的交易。</li>
+<li>為保護您的權益，如您於 udn 成立交易後欲辦理取消交易，請依各服務網站所規定之方式辦理。</li>
+<li>udn 將於知悉您的帳號密碼涉有遭冒用情形時，立即停止該帳號所生交易之處理及後續利用。若您的帳號遭停用時，請透過電話或書面與將 udn 聯絡，我們會儘速協助您處理相關事宜。</li>
+<li>udn 與您交易所使用之電腦系統，將確保具有符合一般可合理期待之安全性。</li>
+<li>所有在 udn 進行的線上消費，除非 udn 明白表示其為出賣人或服務提供者，否則各項商品或服務仍然是由提供各該商品或服務的廠商所出售或提供，交易行為存在於廠商與使用者之間；udn 提供交易平台及付款機制。</li>
+<li>您一旦進行線上消費，即表示願意購買該商品或服務並願遵守交易規則。會員資料 (如地址、電話) 如有變更時，應立即上線修正其所留存之資料，且不得以資料不符為理由，否認其訂購行為或拒絕付款。udn 保有接受您的訂定與否的權利。訂購之商品若經配送兩次無法送達，udn 再經以電話與 E-mail 均無法聯繫逾三天者，將視為您取消該筆訂單。無正當理由取消訂單將可能影響您後續訂購權益。</li>
+<li>相關商品或服務之品質、保固及售後服務，由提供各該商品或服務的廠商負責，但 udn 承諾全力協助會員解決關於因為線上消費所產生之疑問或爭議。</li>
+<li>所有在 udn 所進行的線上消費，除法規另有規範者外，您應同意以 udn 所紀錄之電子交易資料為準，如有糾紛，並以該電子交易資料為認定標準。若您如果發現交易資料不正確，應立即通知 udn 管理者。</li>
+<li>關於您於 udn 所購買各項商品之退、訂貨問題，除依照消費者保護法等相關法令之規定外，並依各商品供應商所定之退訂貨辦法加以處理。但以數位或電磁紀錄形式儲存之商品、易於變質或損壞之商品、以及性質上無法或不適合退還之商品，包括且不限於電腦程式、錄音帶及錄影帶、CD、VCD、DVD、花卉商品及健康食品、以及可供線上下載、線上閱覽、線上視聽之商品或資料等，您認知並同意不適用消費者保護法第19條第1項之猶豫期間解約權之規定。</li>
+<li>得退貨之商品，會員要求退貨或解約時，除應保持所有商品、附件、包裝、及所有附隨文件或資料之完整性外，並應自行負擔運費（符合消費者保護法第19條第1項規定者，無須負擔運費）於通知 udn 後三日內，將發票送達至聯合報及各商品退回供應商所在之地點，違反者不得退貨或解約。經檢查無誤後，將立刻為您辦理相關手續；若您對於退、訂貨之處理流程有任何問題，請於貨到七日內(自送達日起算)，直接與我們聯繫。</li>
+<li>若您發生惡意取消交易、退換或拒收商品、濫用 udn 之會員權益或回饋機制，或任何造成 udn 困擾或損害之行為，udn 保留變更或拒絕提供相關會員服務，以暫停或終止相關會員服務之權利。如 udn 經與您合理溝通未經改善而行使上述權利，或取消、暫停您參加各類活動所得之回饋 ( 例，購物金、折價券、紅利金等 )，您不得要求任何賠償或補償。</li>
+<li>若有取消交易或退換商品等所致之退款，待符合 udn 之退款條件時，將為您辦理退款作業。詳細退款辦法，請參閱各服務網站說明。</li>
+<li>udn 可能包含許多連結，這些被連結網站或網頁上的所有資訊，都是由被連結網站所提供，我們不擔保其內容之正確性、可信度或即時性。</li>
+<li>系統安全
+		<ol class="custom-counter">
+<li>本系統不擔保使用者所上載的資料將被正常顯示、亦不擔保資料傳輸的正確性；如果使用者發現本系統有錯誤或疏失，請立即通知 udn 管理者。</li>
+<li>本系統會定期備份資料，但是除非本系統有故意或重大過失，使用者應同意本系統不用對失誤刪除的資料或備份儲存失敗的資料負責。</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>特定產品交易類服務須知：
+	<p>實體課程須知、付款及退款辦法</p>
+<ol class="custom-counter">
+<li>聯合報數位版專屬條款
+		<ol class="custom-counter">
+<li>適用範圍與優先適用<br/>
+			本聯合報數位版專屬條款（以下簡稱「本專屬條款」），係《udn 會員服務條款》之附加條款，適用於訂購或預購聯合報數位版服務之會員（以下稱「會員或您」）。<br/>
+			如本專屬條款與《udn 會員服務條款》有牴觸時，就聯合報數位版服務之交易、訂閱與使用相關事項，以本專屬條款之約定為準。<br/>
+			 </li>
+<li>訂購平台與訂購完成之認定<br/>
+			您可透過下列平台訂購聯合報數位版服務：<br/>
+			（一） 聯合報數位版官方網站（https://vip.udn.com，以下簡稱「網站」）。<br/>
+			（二） Apple App Store 或 Google Play（以下合稱「應用程式商店」）下載 udn News 行動應用程式（以下簡稱「APP」），並於 APP 內訂購。<br/>
+			您於交易頁面選擇訂購方案與付款方式，並完成付款程序，即表示您已閱讀、了解並同意本專屬條款及該服務頁面所載之交易條件、限制與注意事項；並於付款完成後，交易生效並開通服務。<br/>
+			訂購完成之認定方式如下：<br/>
+			－ 網站：依結帳流程完成付款即視為訂購完成（包含但不限於信用卡、第三方支付〔例如 LINE Pay〕、U 利點數或其他網站公告之付款方式）。<br/>
+			－ APP：依應用程式內購買流程按下「購買」或「訂閱」，並依應用程式商店規定完成扣款，即視為訂購完成。<br/>
+			交易是否生效，仍以系統確認付款成功之通知或紀錄為準。<br/>
+			如因系統或其他原因致付款未完成，則交易不生效；udn 並保留是否接受您的訂單成立之權利</li>
+<li>數位內容服務性質、啟用日與帳號使用<br/>
+			聯合報數位版屬於線上數位內容服務。<br/>
+			本服務之啟用日，原則上為系統確認付款成功並開通使用權限之日。您得以訂購時所登入之會員帳戶使用本服務。<br/>
+			除另有約定之實體贈品外，本服務不提供任何實體商品。<br/>
+			除非因可歸責於 udn 之系統或服務異常，您不得因未登入使用或其他非可歸責於 udn 之事由，主張退費、延長服務期間，或要求將本服務移轉至其他會員帳戶。</li>
+<li>自動續訂與取消方式<br/>
+			聯合報數位版服務的訂閱為透過網站或應用程式商店自動續訂。您完成訂購後，即同意依原訂購平台之規定，於每一訂閱週期屆滿時自動續訂並扣款，直至您取消自動續訂為止。<br/>
+			如欲取消自動續訂，請依原訂購平台辦理：<br/>
+			－ 網站訂購者：請登入您的會員帳號，至「用戶中心 → 訂單資訊 → 訂閱與付款資訊」，關閉「續訂」功能。因作業時間限制，請您於下一個扣款日前至少五個工作天完成設定；逾期者當期仍可能扣款，取消自動續訂將自次一期生效。<br/>
+			－ APP 訂購者：請至應用程式商店之訂閱管理區取消自動續訂。若當期訂閱未到期，使用權限將持續至當期屆滿為止，並自次一期起不再續訂。取消所需之作業時間及細節規範，悉依各應用程式商店之規定辦理。<br/>
+			取消自動續訂，僅代表不再進行下一期扣款，不影響當期已生效之訂閱使用權限。</li>
+<li>續訂價格與優惠適用<br/>
+			自動續訂時，將以您原訂購方案於續訂當時仍有效之優惠價格，或該方案之原價（以較低者為準）計費。<br/>
+			若原優惠方案已終止，則以續訂當時公告之方案價格計費。<br/>
+			如您停止自動續訂並於日後重新訂購，將依重新訂購當時所公告之方案與價格辦理，恕不適用原優惠條件。</li>
+<li>取消訂閱與退款<br/>
+			（一） 聯合報數位版屬於線上數位內容服務，依相關法令規定，不適用《消費者保護法》第十九條所定七日鑑賞期（猶豫期）之規定。<br/>
+			（二） 於訂購方案啟用日（即開始提供數位服務之日）前，您得申請取消訂閱，並應於啟用日前至少五個工作天提出申請。<br/>
+			（三） 訂購方案啟用日後，恕不接受取消訂閱或退費申請。<br/>
+			（四） 使用 U 利點數付款者，於符合前述可取消訂閱條件時，將退回等值 U 利點數；若該點數為有使用期限之行銷點數，退回後原使用期限不變。退回之 U 利點數性質與使用條件，悉依該點數原公告之使用規則辦理。<br/>
+			（五） 您取消自動續訂後，當期訂閱之使用權限仍持續至當期屆滿為止，自次一期起不再續訂。</li>
+<li>付款方式補充說明<br/>
+			－ 網站：網站提供之付款方式以訂購頁面或結帳頁公告為準，包含但不限於信用卡、第三方支付（例如 LINE Pay）及其他 udn 不定期新增之付款方式。<br/>
+			－ 第三方支付：如您使用第三方支付完成付款，相關扣款、退刷、退款及入帳時間，依該第三方支付服務提供者之規定辦理，可能需一定作業時間；udn 將於合理範圍內提供必要協助。<br/>
+			－ APP：訂閱之付款、扣款與退款機制，悉依各應用程式商店之規定辦理。<br/>
+			 </li>
+</ol>
+</li>
+<li>橘世代專屬條款
+		<ol>
+<li>數位內容購買須知與付款
+			<ol class="custom-counter">
+<li>本平台供應經挑選的數位內容，您可以透過行動載具、電腦或其他受支援的載具（合稱「載具」），藉由註冊會員使用本服務瀏覽、尋找或下載數位內容。此處所謂「數位內容」，包括但不限於透過本平台以數位形式取得、收聽、檢視、播放或閱讀的資料檔案、文字、音頻或其他音效、相片、影片或其他圖片。</li>
+<li>購買前確認。本平台提供數位內容免費試閱／聽服務，購買前請務必確認數位內容符合您的需求後再行購買。</li>
+<li>用戶一經選擇購買產品方案、付款方式，並按下「下一步」，即代表已詳細閱讀且同意本平台會員專屬條款及該服務頁面所載明的注意事項，且訂單已成立。您於購物結帳流程填寫資料並按下「確認結帳」時，即視為訂購完成、訂單生效，並已知悉、且同意遵守本服務專屬約定條款的所有約定。</li>
+<li>不適用七天鑒賞期。本平台提供之數位內容，不適用《消費者保護法》第十九條第一項規定之七天內解約權（依據「通訊交易解除權合理例外情事適用準則」第二條）。如本公司因任何理由，選擇將您購買價金退還給您，則您將無權再存取相關數位內容。</li>
+</ol>
+</li>
+<li>實體課程須知、付款及退款辦法
+			<ol class="custom-counter">
+<li>購買前確認。本平台提供實體課程之教學內容、教學範疇、教學時間及地點等相關資訊，均請詳參選購頁面標示之說明。</li>
+<li>.實體課程之購買用戶應於該課程選購頁面所公告之報名截止時點前完成付款，付款完成後始報名成功，具體金額詳參選購頁面。</li>
+<li>退款辦法。如您欲取消已完成給付之實體課程服務並申請退費，雙方同意依下列退款辦法進行：<br/>
+				- 如用戶申請退款之訂單內同時包含數位內容及實體課程，本平台僅就實體課程部分辦理退款，數位內容部分恕不予退費。<br/>
+				- 退款規則、辦法依各供應商課程頁面載明，您於本平台完成課程費用給付，即表示完全同意該課程頁面交易規則。<br/>
+				- 您知悉並了解開課前申請退款，可能因開課前剩餘天數而有不同結果，如收退款手續費、不得退款或僅得轉讓上課權利等，請詳參供應商課程頁面資訊。</li>
+<li>其餘詳細服務權益資訊，請詳見【<a href="https://learning.udn.com/rule" rel="noopener noreferrer" target="_blank"><span>U好學平台服務條款</span></a>】<br/>
+				 </li>
+</ol>
+</li>
+</ol>
+</li>
+<li>經濟日報數位訂閱專屬條款：
+		<p>經濟日報數位訂購服務內容的會員( 於2.3條規定內簡稱為「使用者」 )，應該詳細閱讀下列約定條款，這些約定條款訂立的目的，是為了規範有關經濟日報數位訂閱服務的權利義務，使用者選擇購買產品方案、付款方式，並按下 「下一步」，即代表已詳細閱讀且同意經濟日報數位訂閱會員專屬條款及該服務頁面所載明的注意事項且訂單成立。您可於經濟日報網（money.udn.com，於 2.3條規定內簡稱為「網站」）或於 Apple Store 或 Google Play 平台 （以下簡稱「應用程式商店」） 中下載經濟日報手機應用程式 （以下簡稱「App」），並於 App 中訂購經濟日報數位訂閱服務，完成下述動作即視為訂購完成、訂單生效，並已知悉、且同意遵守本經濟日報數位訂閱專屬約定條款的所有約定。<br/>
+<br/>
+		-網站： 如果您選擇以「信用卡」作為付款方式，填寫信用卡資料，並按下 「前往結帳」；如果您選擇以「U利點數」作為付款方式，按下「扣點」。</p>
+<p>-App： 透過應用程式內購買流程按下「購買」或「訂閱」時。<br/>
+		經濟日報數位訂閱服務提供為數位商品，您可以透過您購買時所登入之會員帳戶使用經濟日報數位訂閱服務，您不得以未登入使用或任何事由主張退費或延長服務期間，或要求將數位商品移轉至其他會員帳戶。除另有約定之實體贈品外，您不會收到實體商品。</p>
+<ol class="custom-counter">
+<li>若您以「信用卡」作為付款方式，經濟日報數位訂閱服務的訂閱為透過網站或應用程式商店自動延展續訂。確認購買經濟日報數位訂閱服務後，將以您的個人信用卡資料進行當次付款，且同意以您的個人信用卡資料進行自動延展續訂付款。若要取消自動延展續訂，應至您原訂閱平台，透過以下步驟進行：<br/>
+<br/>
+			-網站： 登入您的經濟日報數位訂閱會員帳號，至 「會員中心→訂閱管理→訂閱資訊」取消勾選「您將自動續訂」，並於跳出之視窗按下「忍痛取消」，始正式完成自動延展續訂之取消，系統將發送「您已解除續訂」之通知至您的電子信箱或手機。因作業時間限制，請您在下一個扣款日之前五個工作日進行，逾期當期仍將扣款，取消自動延展續訂將自下一期生效。<br/>
+<br/>
+			-App： 前往應用程式商店的訂閱管理區，取消自動延展續訂，或登入您的經濟日報數位訂閱會員帳號，至 「會員中心→訂閱管理→訂閱資訊」取消勾選「您將自動續訂」，並於跳出之視窗按下「忍痛取消」。若當期訂閱未到期，使用權限將持續到當期訂閱到期為止，取消自動延展續訂將自次一期生效。若您是前往應用程式商店的訂閱管理區取消續訂，其所需之作業時間及細節規範，以各應用程式商店之規定為準；若您是登入您的經濟日報數位訂閱會員帳號取消，請您在下一個扣款日之前五個工作日進行，逾期當期仍將扣款。<br/>
+			 </li>
+<li>「限時優惠方案」價格，僅適用於同帳戶首次首期扣款，第二期起恢復該方案所定價格。若服務到期時，選擇重新訂購，亦無法再適用原優惠價格。<br/>
+			 </li>
+<li>取消訂閱。「經濟日報數位訂閱」 屬於線上數位內容服務，訂購完成後即無法適用消費者保護法第十九條七天猶豫期間之規定<br/>
+			 </li>
+<li>付款方式。
+			<p>網站： 在經濟日報數位訂閱網站上的訂戶，若您選擇以「信用卡」作為付款方式，您授權我們於經濟日報數位訂閱服務訂閱期間得儲存您的信用卡資料作為訂購與續訂的付款方式，並依照該付款方式每期自動收款。除非您取消自動延展續訂，否則系統會在每個帳單周期 ( 可為每周、每月、每年或其他周期長度 ) 開始前 24 小時內自動向您收費，訂閱服務將在下一周期續約日自動續約。<br/>
+<br/>
+			如果您選擇以「信用卡」作為付款方式，自動續訂向您收費時若您的付款方式無效，您授權我們得透過扣除您會員帳戶中的U利點數作為其他付款方式，U利點數1點等於新台幣1元，若屆時您的U利點數餘額不足，則視為取消續訂，系統將自動停止您的下期訂閱。<br/>
+<br/>
+			-App： 在 App 中，將依照應用程式商店有關「應用程式內購」的規定，以約定方式訂購與續訂，並依照應用程式商店的付款方式每期自動扣款，至您取消為止。如果您同意應用程式內購，即代表您個人同意使用該項機制進行購買，並遵守您個人與該應用程式商店間消費機制設定與協議，本公司不涉及您與應用程式商店之間的付款關係及與其有關的權利義務。</p>
+</li>
+</ol>
+</li>
+<li>經濟日報「稅稅唸學堂-不動產移轉的三十堂課」專屬條款<br/>
+		經濟日報「稅稅唸學堂-不動產移轉的三十堂課」訂購服務內容的會員( 於2.4條規定內簡稱為「使用者」 )，應該詳細閱讀下列約定條款，這些約定條款訂立的目的，是為了規範有關「稅稅唸學堂-不動產移轉的三十堂課」服務（以下簡稱本服務）的權利義務，使用者選擇購買產品方案、付款方式，並按下 「下一步」，即代表已詳細閱讀且同意本服務會員專屬條款及該服務頁面所載明的注意事項且訂單成立。您可於經濟日報網（ money.udm.com 於 2.4 條規定內簡稱為「網站」 ） 或於 Apple Store 或 Google Play 平台 （ 以下簡稱「應用程式商店」 ） 中下載經濟日報手機應用程式 （以下簡稱「App」），並於 App 中訂購本服務，完成下述動作即視為訂購完成、訂單生效，並已知悉、且同意遵守本服務專屬約定條款的所有約定。<br/>
+		 
+		<ol class="custom-counter">
+<li>購買與付款
+			<p>免費試聽。</p>
+			本服務提供部分數位內容免費試聽的服務，購買前請務必先行試聽，確認該數位內容符合您的需求後方行購買。<br/>
+			 
+			<p>網站購買。</p>
+			如果您選擇以「信用卡」作為付款方式，填寫信用卡資料，並按下「前往結帳」；如果您選擇以「U 利點數」作為付款方式，按下「扣點」。<br/>
+			 
+			<p>App購買。</p>
+			如果您選擇透過應用程式內購買流程按下「購買」時，即代表您個人同意使用該項機制進行購買，並遵守您個人與該應用程式商店間消費機制設定與協議，本公司不涉及您與應用程式商店之間的付款關係及與其有關的權利義務。<br/>
+			 </li>
+<li>退款政策：當您遇到退款問題，請您依照下述方式處理：
+			<ol>
+<li>不適用七天鑑賞期。本服務提供之服務屬於數位內容智慧財產權產品，且皆有提供用戶免費試聽內容，故依據「通訊交易解除權合理例外情事適用準則」第二條規定，排除《消費者保護法》第十九條第一項規定之七天內解除權（七天鑑賞期）。</li>
+<li>如果本公司因任何理由，選擇將您購買價金退還給您，則您將無權再存取相關數位內容。</li>
+<li>應用程式內購之退款。如果您透過Google Play 或 Apple的 App 內購買，請您參考並遵循該服務商之退款政策辦理。<br/>
+				移除數位內容或終止數位內容存取權。<br/>
+				根據本服務條款，只要本公司持續有權將數位內容提供給您，您即可繼續透過本服務享有存取數位內容的權利。在某些情況下（ 例如本公司喪失相關權利、中斷某項服務，或某項數位服務停止供應、或您違反適用條款或法規 ），本公司可能會從您的載具中移除您已取得的數位內容，或終止您對數位內容的存取權。本公司將盡可能以合理之方式，於上述移除數位內容或終止存取權之前通知您。<br/>
+				 </li>
+</ol>
+</li>
+</ol>
+</li>
+<li>聯合知識庫台灣文學知識庫個人版專屬條款
+		<p>針對訂購【聯合知識庫台灣文學知識庫個人版】服務內容的會員，應該詳細閱讀下列約定條款，這些約定條款訂立的目的，是為了保護聯合知識庫台灣文學知識庫個人版使用者權益 ( 於2.5 條規定內簡稱為「使用者」 )，使用者選擇購買產品方案、付款方式，並按下「下一步」，即代表已詳細閱讀且同意聯合知識庫台灣文學知識庫個人版會員專屬條款及該服務頁面所載明的注意事項且訂單成立。您可於聯合知識庫(udndata.com)個人會員官方網站（於 2.5 條規定內簡稱為「網站」）訂購聯合知識庫台灣文學知識庫個人版服務，完成下述動作即視為訂購完成、訂單生效，並已知悉、且同意遵守本聯合知識庫台灣文學知識庫個人版專屬約定條款的所有約定。<br/>
+<br/>
+		-網站：透過網站購買流程完成「購買」或「訂閱」，並按下 「確認結帳」時。 聯合知識庫台灣文學知識庫個人版服務提供為資料庫訂閱式服務之數位商品，您可以透過您購買時所登入之會員帳戶使用聯合知識庫台灣文學知識庫個人版服務，您不得以未登入使用或任何事由主張退費或延長服務期間，或要求將資料庫訂閱式服務之數位商品移轉至其他會員帳戶。除另有約定之實體贈品外，您不會收到實體商品。</p>
+<ol class="custom-counter">
+<li>聯合知識庫台灣文學知識庫個人版服務提供各種付款方式 ( 請詳見2.3.4條 )，若您是透過信用卡訂購，將自動延展續訂。確認購買本產品服務後，將以您所輸入的個人信用卡資料進行本次付款且同意以您所輸入的個人信用卡資料進行自動延展續訂付款。若要取消自動延展續訂，應請您登入您的聯合知識庫台灣文學知識庫個人版會員帳號，至『會員中心→訂閱查詢→解除續訂』取消自動延展續訂，因作業時間限制，請您在下一個扣款日之前五天進行，逾期仍將繼續扣款，取消自動延展續訂將自次一期生效。</li>
+<li>台灣文學知識庫個人版訂閱服務到期時，將以原訂購本產品服務方案之當時優惠價格，或原價方案價格較低者之價格自動延展續訂，再續訂者時亦同。您可以前往『購買商品』頁面，檢視當時的方案和價格。如因故停止自動續訂者，應重新訂購，無法再適用原優惠價格。</li>
+<li>取消訂閱。聯合知識庫台灣文學知識庫個人版」屬於線上數位內容服務，無法適用消費者保護法第十九條七天鑑賞期之規定，一旦付款成功，本服務隨即開通使用，恕不接受退訂。若要取消自動延展續訂需作業時間，請您在下一個扣款日之前五個工作天進行，逾期仍將繼續扣款，取消自動延展續訂將自次一期生效。</li>
+<li>付款方式。
+			<ol class="custom-counter">
+<li>信用卡付款：
+				<p>選擇信用卡付款的訂戶，您授權我們儲存您的信用卡資料作為訂購與續訂的付款方式，並依照該付款方式每期自動收款，至您取消自動續訂本產品服務方案為止。除非取消，否則系統會在每個帳單週期開始前 24 小時內自動向您收費，訂購服務將在下一週期續約日自動續約。如果您的主要付款方式無效，您授權我們透過帳戶中的其他付款方式收取費用。如果您未向我們提供備用付款方式且未能付款，或者您帳戶中的所有付款方式均無效，則視為取消續訂，系統將自動停止您的下期訂購。<br/>
+				－其他方式付款：除信用卡付款方式外，您亦可依照網站內「付款方式」的規定，選擇您欲使用之方式完成訂購，並依照各項付款方式之付款說明完成每期款項之繳納。</p>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>聯合報用戶生活+專屬會員條款：
+		<ol class="custom-counter">
+<li>註冊【聯合報用戶生活+】服務內容的會員，代表同意一併取得聯合報之友會員身分；當您成為我們的會員後，聯合報將提供予您的會員服務內容有：訂報、付費新聞訂閱、活動、講座、展覽、優惠商品等商品或服務優惠訊息、或其他未來可能新增之一般會員服務，詳細服務內容請參考【 <a href="https://sep.udn.com/sepprod/?page_id=585" rel="noopener noreferrer" target="_blank">產品交易類服務須知</a> 】</li>
+</ol>
+</li>
+<li>元氣網「線上影音課程」專屬條款：
+		<ol class="custom-counter">
+<li>服務適用與優先權<br/>
+			元氣網提供之線上影音及數位內容，依法不適用七天猶豫期。線上影音、數位內容及實體課程（包含免費與付費服務），其詳細權利義務、智慧財產權規範、購買及退款流程，悉依「<span>U好學平台服務條款</span>」及各課程頁面之規定為準。當您開始使用本服務或報名課程時，即視為您已閱讀並同意上述條款。</li>
+<li>使用限制與授權變動：<br/>
+			- 僅限個人使用：本服務提供之健康或醫療相關影音內容，僅供您個人於本服務內瀏覽。未經授權，嚴禁任何形式的轉載、重製或公開傳輸。<br/>
+			- 內容變動與終止：您知悉本服務部分內容係由第三方授權。只要本公司持續有權提供，您即可繼續存取。但若遇授權終止、服務調整或您違反條款時，本公司保有移除您已取得之數位內容或終止存取權之權利，且無須預先通知或負擔損害賠償責任。</li>
+<li>其餘詳細服務權益資訊，請詳見【<a href="https://learning.udn.com/rule" rel="noopener noreferrer" target="_blank"><span>U好學平台服務條款</span></a>】</li>
+</ol>
+</li>
+<li>U 好學專屬條款：
+		<ol class="custom-counter">
+<li>針對使用「U 好學」所屬品牌各館商品 (包括但不限於：一刻鯨選、橘世代、元氣網等) 的會員，udn 將提供予您的服務內容有：試聽試閱、交易與兌換課程與有聲商品、訂閱服務，或其他未來可能新增之一般會員服務，詳細使用方式請參考【<a href="https://learning.udn.com/rule" rel="noopener noreferrer" target="_blank"><span>U好學平台服務條款</span></a>】。<br/>
+			 </li>
+</ol>
+</li>
+<li>「U 利點數」專屬條款
+		<ol class="custom-counter">
+<li>針對購買「U 利點數」的會員，udn 將提供予您的服務內容有：消費電子小說、贊助好文、訂閱聯合報數位版或是經濟日報數位訂閱等商品或服務，或其他未來可能新增之一般會員服務，詳細使用方式請參考U利點數購買頁面之「<a href="https://upoints.udn.com/upt/Faq.jsp" rel="noopener noreferrer" target="_blank"><span>注意事項</span></a>」</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<div>
+<h3 class="content_title">青少年及兒童之保護：</h3>
+<p class="text">為確保兒童及青少年使用網路的安全，並避免隱私權受到侵犯，未滿二十歲之未成年人使用本服務時，應先取得法定代理人（或監護人）之同意，如有進行金流交易（例如：內容服務購買等…）時應有法定代理人（或監護人）全程在旁陪伴。</p>
+</div>
+<div>
+<h3 class="content_title">搜尋、檢索或找圖：</h3>
+<p class="text">會員服務內所提供之搜尋、檢索或找圖之服務或功能，僅係我們利用電腦程式系統所提供之自動化服務，由使用者自行依照所選定或設定之條件或內容，進行搜尋或檢索；因此所得之搜尋、檢索或找圖結果及相關之連結，均係由各該來源網站或相關第三人所提供，應分別由各該來源網站自行負完全之責任，與 udn 無涉。</p>
+</div>
+<h3 class="content_title">廣告、資訊與內容：</h3>
+<ol class="custom-counter">
+<li>udn對於您使用會員服務或經由會員服務連結之其他網站而取得之資訊、廣告或內容建議（包括但不限於，商務、投資理財、醫療、法律等方面）、不擔保其完整性與正確性。</li>
+<li>udn 對於會員服務所提供之資訊或建議有權隨時修改或刪除。基於尊重內容提供者之智慧財產權，udn 對內容提供者所提供之內容並不做實質之審查或修改，對該等內容之正確真偽亦不負任何責任。對該等內容之正確真偽，您宜自行判斷之。您若認為某些內容涉及侵權或有所不實，請逕向該內容提供者反應意見。</li>
+</ol>
+<h3 class="content_title">使用者的行為：</h3>
+<ol class="custom-counter">
+<li>任何未經事前授權的商業行為都是被禁止的。</li>
+<li>您必須遵守相關法令規範，並且對於經由使用者名稱和密碼所進行的任何行為、以及所儲存的所有資料負責。您必須同意不從事以下的行為：
+	<ol class="custom-counter">
+<li>刊載或儲存任何誹謗、詐欺、傷害、猥褻、色情、賭博或其他一切違反法令之檔案或資料。</li>
+<li>刊載或儲存任何侵害他人智慧財產權或其他權益的資料。</li>
+<li>未經同意收集他人電子郵件位址以及其他個人資料。</li>
+<li>未經同意擅自摘錄或使用會員服務內任何資料庫內容之全部或一部。</li>
+<li>刊載、儲存病毒、或其他任何足以破壞或干擾電腦系統或資料的程式或訊息。</li>
+<li>破壞或干擾會員服務的系統運作或違反一般網路禮節之行為。</li>
+<li>在未經授權下進入會員服務系統或是與系統有關之網路、或冒用他人帳號。</li>
+<li>任何妨礙或干擾其他使用者使用會員服務之行為。</li>
+<li>任何透過不正當管道竊取會員服務之會員帳號、密碼或存取權限之行為。</li>
+<li>不得利用本服務從事商業行為或其他不符合會員服務所提供的使用目的之行為。</li>
+</ol>
+</li>
+<li>關於您利用會員服務之行為，若涉及著作權事宜，您同意遵守「著作權聲明」之規範。會員服務內之各類文字、圖檔、圖片及其他著作或資料，其著作權或其他相關智慧財產權均仍屬於提供該文字、圖檔、圖片及其他著作或資料之各別廠商或其他合法權利人所有，並由各別廠商或其他合法權利人依照當時所定之授權條件及範圍授權會員使用，但僅限於您個人使用，未經事前授權您不可以將這些文字、圖檔、圖片或其他著作或資料使用於：
+	<ol class="custom-counter">
+<li>銷售、轉讓、出租、出借、轉授權、隨書附贈或其他任何形式的商業用途。</li>
+<li>上載於其他任何網站、或以其他方式提供予其他人使用。</li>
+<li>色情、侮辱、誹謗、非法交易、或其他不符合著作權法或其他法令規定之行為。</li>
+<li>為上述使用目的所為之修改或編輯。</li>
+</ol>
+</li>
+<li>如果任何文字、圖檔、圖片或其他著作或資料發生權利歸屬或其他合法性爭議，本網站有權隨時不經通知，直接停止提供、或直接刪除、或通知會員停止使用。</li>
+</ol>
+<h3 class="content_title">責任限制：</h3>
+<ol class="custom-counter">
+<li>會員服務均僅依各該服務當時之功能及現況提供使用，對於使用者之特定要求或需求，包括但不限於速度、安全性、可靠性、完整性、正確性及不會斷線和出錯等，udn 不負任何形式或內容之擔保或保證責任。</li>
+<li>udn 不保證任何檔案或資料於傳送過程均係可靠且正確無誤，亦不保證所儲存或所傳送之檔案或資料之安全性、可靠性、完整性、正確性及不會斷線和出錯等，會員應對傳送過程中或儲存時之郵件、檔案或資料遺失或電腦系統損壞自負完全責任，與 udn 無涉。</li>
+<li>因 udn 所提供的會員服務本身之使用，所造成之任何直接或間接之損害，除有故意或重大過失者外，udn 均不負任何責任，即使我們已被告知或曾明白建議者，亦同。</li>
+<li>凡非透過 udn 而私下與廠商或於利用會員服務進行交易或服務行為者，udn 不保障該會員應有權益。若因此造成會員產生任何損失，您應自行負擔所有責任，udn 無須負責或賠償任何會員損失。</li>
+</ol>
+<h3 class="content_title">服務暫停或中斷：</h3>
+<ol class="custom-counter">
+<li>在下列情形，udn 將暫停或中斷會員服務之全部或一部，且對使用者任何直接或間接之損害，均不負任何責任：
+	<ol class="custom-counter">
+<li>對會員服務相關軟硬體設備進行搬遷、更換、升級、保養或維修時；</li>
+<li>使用者有任何違反政府法令或本會員條款情形；</li>
+<li>天災或其他不可抗力所致之服務停止或中斷；</li>
+<li>其他不可歸責於 udn 之事由所致之服務停止或中斷。</li>
+</ol>
+</li>
+<li>會員服務系統或功能『例行性』之維護、改置或變動所發生之服務暫停或中斷，udn 將於該暫停或中斷前以電子郵件、公告或其他適當之方式告知會員。</li>
+<li>因使用者違反相關法令或本使用條款、或依相關主管機關之要求、或因其他不可歸責於 udn 之事由，而致會員服務全部或一部暫停或中斷時，暫停或中斷期間仍照常計費。</li>
+</ol>
+<h3 class="content_title">終止服務：</h3>
+<ol class="custom-counter">
+<li>基於公司的運作，會員服務有可能停止提供服務之全部或一部，使用者不可以因此而要求任何賠償或補償。</li>
+<li>如果您違反了本會員條款，udn 保留隨時暫時停止提供服務、或終止提供服務之權利，您不可以因此而要求任何賠償或補償。</li>
+<li>如果您在會員服務上所刊載或儲存的檔案或資料，有任何違反法令、違反本會員條款、有侵害第三人權益之虞，udn 保留隨時得不經通知直接加以移動、刪除或停止服務提供之權利。若 udn 因此受到任何損害，您應對我們負損害賠償之責。</li>
+</ol>
+<h3 class="content_title">準據法與管轄權：</h3>
+<p class="text">會員與本網站之權利義務關係，應依網路規範及中華民國法律定之；若產生任何爭議，雙方同意以台灣台北地方法院為第一審管轄法院。本網站的任何聲明、條款如有未盡完善之處，將以最大誠意，依誠實信用、平等互惠原則，共商解決之道。</p>
+</div>
+<p class="text mt-16">udn 會員服務條款最近一次修改時間：2026 年 03 月 10 日。</p>
+<p class="text mt-16"> </p>
+<p class="text mt-16">以上為 udn.com 會員服務條款，個別產品之服務條款如下連結，若有啟用相關服務，請前往閱讀。</p>
+<ul>
+<li class="text mt-16"><a href="https://blog.udn.com/service/doc/policy.jsp" rel="noopener noreferrer" target="_blank"><span>udn 部落格</span></a></li>
+<li class="text mt-16"><a href="https://reading.udn.com/store/store/store_act.do?a=policy" rel="noopener noreferrer" target="_blank"><span>琅琅書店</span></a></li>
+<li class="text mt-16"><a href="https://story.udn.com/dcstore/Term.do?tt=0&amp;action=view" rel="noopener noreferrer" target="_blank"><span>讀創故事</span></a></li>
+<li class="text mt-16"><a href="https://udndata.com/policy.html" rel="noopener noreferrer" target="_blank"><span>聯合知識庫</span></a></li>
+<li class="text mt-16"><a href="https://woman.udn.com/woman/index" rel="noopener noreferrer" target="_blank"><span>女子漾</span></a></li>
+<li class="text mt-16"><a href="https://learning.udn.com/rule" rel="noopener noreferrer" target="_blank"><span>U 好學</span></a></li>
+</ul>
+</div><!-- --><!-- --></div></div>
+  </div>
+</section>
+<div id="login-method-overlay" hidden><section class="login-method-sheet" role="dialog" aria-modal="true" aria-labelledby="login-method-title"><div class="login-method-header"><button id="login-method-close" aria-label="關閉會員登入方式"><i class="ph ph-caret-down" aria-hidden="true"></i></button><h2 id="login-method-title">會員登入</h2></div><div class="login-method-body"><h3>請選擇登入方式</h3><button class="auth-option" data-auth-provider="E-mail／手機"><img src="assets/login-udn.png" alt="">使用 E-mail / 手機登入</button><div class="auth-divider">OR</div><button class="auth-option facebook" data-auth-provider="Facebook"><img src="assets/login-facebook.svg" alt="">使用Facebook登入</button><button class="auth-option" data-auth-provider="Google"><img src="assets/login-google.svg" alt="">使用Google登入</button><button class="auth-option apple" data-auth-provider="Apple"><img src="assets/login-apple.svg" alt="">使用 Apple 登入</button><button class="auth-option line" data-auth-provider="Line"><img src="assets/login-line.svg" alt="">使用Line登入</button></div></section></div><section id="course-panel" aria-label="課程內容" hidden>
+  <div class="course-nav"><button id="course-back" aria-label="返回課程列表"><i class="ph ph-caret-left" aria-hidden="true"></i></button><span id="course-nav-title"></span><div><button id="course-favorite" aria-label="收藏課程" aria-pressed="false"><i class="ph ph-heart" aria-hidden="true"></i></button><button id="course-share" aria-label="分享課程"><i class="ph ph-export" aria-hidden="true"></i></button></div></div>
+  <div id="course-scroll" tabindex="-1">
+    <img id="course-cover" alt="課程封面">
+    <div class="course-overview"><h1><span id="course-type" class="tag">聲音</span><span id="course-title"></span></h1><p id="course-subtitle"></p><div class="course-price-label">購買價</div><p class="course-price"><span id="course-price"></span><del id="course-old-price"></del></p></div>
+    <div class="course-sticky"><div class="course-tabs" role="tablist" aria-label="課程資訊"><button id="course-intro-tab" role="tab" aria-selected="false" aria-controls="course-intro">簡介</button><button id="course-catalog-tab" role="tab" aria-selected="true" aria-controls="course-catalog">目錄</button></div><div id="course-catalog-tools"><div class="catalog-actions"><label class="episode-range"><span class="sr-only">集數範圍</span><select id="episode-range"><option value="first">1–20</option><option value="last">21–24</option></select><i class="ph ph-caret-down" aria-hidden="true"></i></label><button id="episode-sort" aria-label="倒序排列目錄" aria-pressed="false"><i class="ph ph-arrows-down-up" aria-hidden="true"></i></button><div class="catalog-download"><button id="course-delete-downloads" disabled>刪除全部</button><button id="course-download-all">下載本頁音頻</button></div></div><p id="course-download-size">237 MB</p></div></div>
+    <div id="course-catalog" role="tabpanel" aria-labelledby="course-catalog-tab"></div>
+    <div id="course-intro" role="tabpanel" aria-labelledby="course-intro-tab" hidden></div>
+  </div>
+<div id="course-download-progress" role="status" hidden><span id="download-progress-text">下載中 0 / 1</span><button id="download-cancel"><i class="ph ph-stop-circle" aria-hidden="true"></i>取消下載</button><div id="download-progress-fill"></div></div>
+<div id="course-favorite-toast" role="status" hidden><img src="assets/favorite-whale.png" alt=""><span>已加入收藏</span></div>
+
+  <div class="course-bottom"><button id="course-trial"><i class="ph ph-play" aria-hidden="true"></i><span>試閱</span></button><button id="course-gift"><i class="ph ph-gift" aria-hidden="true"></i><span>贈送朋友</span></button><button id="course-buy">購買</button></div>
+</section>
+<section id="transcript-panel" aria-label="文稿" hidden><div class="transcript-header"><button id="transcript-back" aria-label="返回課程"><i class="ph ph-caret-left" aria-hidden="true"></i></button><h2>文稿</h2><button id="transcript-play" aria-label="播放本集"><i class="ph ph-play-circle" aria-hidden="true"></i></button></div><article id="transcript-content" tabindex="-1"><h1 id="transcript-title"></h1><p id="transcript-author"></p><div id="transcript-body"></div></article></section>
+<section id="mini-player" aria-label="迷你播放器" hidden>
+  <button class="mini-close" id="mini-close" aria-label="關閉播放器"><i class="ph ph-x-circle" aria-hidden="true"></i></button>
+  <div class="mini-info"><h2 id="mini-title"></h2><p id="mini-author"></p><div class="mini-timeline"><time id="mini-elapsed">00:00</time><input id="mini-seek" type="range" min="0" max="145" value="0" step="1" aria-label="播放進度"><time id="mini-duration">02:25</time></div></div>
+  <button id="mini-expand" aria-label="展開播放控制" aria-expanded="false" aria-controls="mini-extra-controls"><i class="ph ph-caret-up" aria-hidden="true"></i></button>
+  <button id="mini-toggle" aria-label="暫停"><i class="ph-fill ph-pause" aria-hidden="true"></i></button>
+  <div id="mini-extra-controls" hidden><button id="mini-rewind" aria-label="後退 15 秒"><i class="ph ph-skip-back" aria-hidden="true"></i>15 秒</button><span>模擬播放</span><button id="mini-forward" aria-label="快轉 15 秒">15 秒<i class="ph ph-skip-forward" aria-hidden="true"></i></button></div>
+</section>
+<section id="library-panel" aria-label="我聽" hidden><h1 id="library-title">我聽</h1><div class="library-main-tabs" role="tablist" aria-label="我聽內容"><button role="tab" data-library-main="history" aria-selected="false">閱聽紀錄</button><button role="tab" data-library-main="list" aria-selected="true">我的聽單</button></div><nav class="library-filters" aria-label="聽單分類"><button data-library-filter="purchased" class="active">購買</button><button data-library-filter="borrowed">租借</button><button data-library-filter="subscribed">訂閱</button><button data-library-filter="favorites">收藏</button></nav><div id="library-content"></div></section>
+<section id="checkout-panel" aria-label="立即購買" hidden><div class="flow-header"><button id="checkout-close" aria-label="關閉購買"><i class="ph ph-x" aria-hidden="true"></i></button><h2>立即購買</h2></div><div class="checkout-body"><div id="checkout-course"></div><p>購買</p><button class="checkout-plan" aria-pressed="true">全套<span id="checkout-price"></span></button><div id="checkout-coupon-row"><input type="checkbox" id="checkout-coupon-checkbox" aria-label="使用紅包折抵"><i class="ph ph-check coupon-checkmark" aria-hidden="true"></i><button id="checkout-coupon"><span>使用紅包折抵</span><b id="checkout-coupon-label">請選擇</b><i class="ph ph-caret-right" aria-hidden="true"></i></button></div><div class="checkout-details"><h3>付款詳情</h3><p>售價<span id="checkout-original"></span></p><p id="checkout-discount" hidden>紅包折抵<span>−50 點</span></p></div></div><div class="checkout-footer"><div><span>錢包餘額 2641 點</span><label>需付點數 <b id="checkout-total"></b> 點</label></div><button id="checkout-confirm">立即兌換</button><p>按下「立即兌換」即同意服務條款與紅包折抵規則</p></div></section>
+<section id="coupon-panel" aria-label="紅包" hidden><div class="flow-header"><button id="coupon-back" aria-label="返回購買"><i class="ph ph-caret-left" aria-hidden="true"></i></button><h2>紅包</h2><button id="coupon-info" aria-label="紅包說明"><i class="ph ph-info" aria-hidden="true"></i></button></div><div class="coupon-wallet-tabs" role="tablist" aria-label="紅包類型" hidden><button role="tab" data-coupon-tab="self" aria-selected="true">可自用 <span id="coupon-self-count">0</span></button><button role="tab" data-coupon-tab="gift" aria-selected="false">可贈送 <span id="coupon-gift-count">0</span></button></div><div class="coupon-summary"><span>共 9 張</span><small>選擇抵用 1 張</small></div><div id="coupon-list"></div></section>
+<div id="gift-dialog" hidden><section role="dialog" aria-modal="true" aria-labelledby="gift-title"><h2 id="gift-title">贈送朋友</h2><p>將會使用您的點數兌換此內容給朋友領取使用。兌換期限為一年。</p><div><button id="gift-cancel">取消</button><button id="gift-confirm">確認</button></div></section></div>
+<div id="coupon-rules-overlay" hidden>
+  <section class="coupon-rules-dialog" role="dialog" aria-modal="true" aria-labelledby="coupon-rules-title" aria-describedby="coupon-rules-content">
+    <button id="coupon-rules-close" aria-label="關閉紅包折抵規則說明"><i class="ph ph-x" aria-hidden="true"></i></button>
+    <h2 id="coupon-rules-title">紅包折抵規則說明</h2>
+    <div id="coupon-rules-content">
+      <p>活動或儲值贈送之紅包，可用於內容兌換的點數折抵；部分標示不適用的內容，恕無法使用紅包抵用。</p>
+      <h3>折價券：</h3>
+      <p>兌換內容時，可抵用部分點數，若產生抵用餘額將不返還。每次兌換限抵用一張。</p>
+      <h3>禮品券：</h3>
+      <p>購買禮品券（贈送朋友）可透過訊息提供收禮人兌換指定內容，收禮人不需支付額外費用。</p>
+    </div>
+  </section>
+</div>
+<div class="toast" role="status"></div><div class="home-indicator" aria-hidden="true"></div></div><script src="js/home-data.js?v=remaining-20261029"></script><script src="js/search-data.js?v=remaining-20261029"></script><script src="js/home.js?v=remaining-20261029"></script><script src="js/search.js?v=remaining-20261029"></script><script src="js/notifications.js?v=remaining-20261029"></script><script src="js/settings.js?v=remaining-20261029"></script><script src="js/terms-browser.js?v=remaining-20261029"></script><script src="js/login-sheet.js?v=remaining-20261029"></script><script src="js/course-intro.js?v=remaining-20261029"></script><script src="js/course.js?v=remaining-20261029"></script><script src="js/remaining-flows.js?v=coupon-states-20261029"></script><script src="js/coupon-rules.js"></script></body></html>

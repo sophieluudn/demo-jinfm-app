@@ -1,0 +1,3 @@
+﻿from pathlib import Path
+p=Path('js/course.js');s=p.read_text(encoding='utf-8').replace("document.querySelector('#download-progress-fill').style.width=((job.done+job.percent/100)/job.queue.length*100)+'%';", "document.querySelector('#download-progress-fill').style.transform='scaleX('+((job.done+job.percent/100)/job.queue.length)+')';");p.write_text(s,encoding='utf-8')
+p=Path('css/course-extras.css');s=p.read_text(encoding='utf-8').replace('width:0;transition:width .2s linear','width:100%;transform:scaleX(0);transform-origin:left;transition:transform .2s linear');p.write_text(s,encoding='utf-8')

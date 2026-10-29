@@ -1,0 +1,24 @@
+#mini-player{position:absolute;z-index:26;bottom:84px;left:11px;right:11px;min-height:69px;display:grid;grid-template-columns:minmax(0,1fr) 22px 36px;column-gap:10px;align-items:center;padding:10px 13px;border-radius:8px;background:#303030f5;color:#fff;box-shadow:0 2px 8px #0000000d}
+#mini-player[hidden],#mini-player [hidden]{display:none!important}
+.mini-info{min-width:0}.mini-info h2{font-size:12px;font-weight:500;line-height:17px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;margin:0 0 1px}.mini-info p{font-size:11px;line-height:16px;color:#aaa;margin:0}
+.mini-timeline{display:flex;gap:3px;align-items:center;font-size:11px;line-height:15px;color:#aaa;white-space:nowrap}
+.mini-timeline time{font-variant-numeric:tabular-nums}
+#mini-seek{appearance:none;-webkit-appearance:none;height:4px;flex:1;min-width:0;cursor:pointer;border-radius:3px;margin:0;background:linear-gradient(to right,#19778c var(--progress,0%),#656565 var(--progress,0%));padding:0}
+#mini-seek::-webkit-slider-thumb{appearance:none;width:7px;height:7px;border-radius:50%;background:#19778c}
+#mini-seek::-moz-range-thumb{width:7px;height:7px;border:0;background:#19778c}
+#mini-toggle{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #fff;border-radius:50%;font-size:23px;padding:0;color:#fff}
+#mini-expand{display:flex;align-items:center;justify-content:center;color:#aaa;font-size:20px;padding:0}
+.mini-close{display:none;position:absolute;left:13px;top:26px;color:#ddd;font-size:16px;padding:0;line-height:1}
+#mini-player.paused .mini-close{display:flex}#mini-player.paused .mini-info{padding-left:29px}
+#mini-extra-controls{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #555;margin-top:9px;padding-top:9px;font-size:11px;color:#aaa}
+#mini-extra-controls button{display:flex;align-items:center;gap:5px;font-size:12px;color:#fff;padding:3px 0}
+#mini-expand[aria-expanded="true"] i{transform:rotate(180deg)}
+.episode.episode-active{background:#f1f8fa}.episode-active h2{color:#19778c}.episode-active .episode-status{color:#19778c}
+.episode-status.is-playing{height:28px;width:28px;min-width:28px;background:#19778c;color:#fff;border-radius:50%;font-size:17px}
+.phone.has-mini-player #course-scroll{padding-bottom:160px}.phone.has-mini-player #transcript-content{padding-bottom:110px}
+.phone.has-mini-player #course-download-progress{bottom:158px}
+.phone.transcript-open #mini-player{bottom:20px}
+.phone.settings-subpage #mini-player,.phone.notifying #mini-player{bottom:20px}
+.phone.terms-browser-open #mini-player,.phone.login-method-open #mini-player{visibility:hidden}
+@media(prefers-reduced-motion:reduce){#mini-player *{transition:none!important}}
+.episode:has(.episode-status.is-playing){gap:9px}#mini-player{background:#333}

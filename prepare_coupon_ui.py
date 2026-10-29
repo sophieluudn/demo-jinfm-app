@@ -1,0 +1,7 @@
+from pathlib import Path
+old='<button id="checkout-coupon"><i class="ph ph-circle" aria-hidden="true"></i><span>使用紅包折抵</span><b id="checkout-coupon-label">請選擇</b><i class="ph ph-caret-right" aria-hidden="true"></i></button>'
+new='<div id="checkout-coupon-row"><input type="checkbox" id="checkout-coupon-checkbox" aria-label="使用紅包折抵"><button id="checkout-coupon"><span>使用紅包折抵</span><b id="checkout-coupon-label">請選擇</b><i class="ph ph-caret-right" aria-hidden="true"></i></button></div>'
+tabs='<div class="coupon-wallet-tabs" role="tablist" aria-label="紅包類型" hidden><button role="tab" data-coupon-tab="self" aria-selected="true">可自用 <span id="coupon-self-count">0</span></button><button role="tab" data-coupon-tab="gift" aria-selected="false">可贈送 <span id="coupon-gift-count">0</span></button></div>'
+for name in ['index.html','remaining-flows.html']:
+ p=Path(name);s=p.read_text(encoding='utf-8');assert old in s;s=s.replace(old,new).replace('<div class="coupon-summary">',tabs+'<div class="coupon-summary">');p.write_text(s,encoding='utf-8')
+p=Path('index.html');s=p.read_text(encoding='utf-8').replace('<link rel="stylesheet" href="css/remaining-flows.css?v=remaining-20261029">','<link rel="stylesheet" href="css/remaining-flows.css?v=remaining-20261029"><link rel="stylesheet" href="css/coupons.css">').replace('js/remaining-flows.js?v=checkout-shared-20261029','js/remaining-flows.js?v=coupon-states-20261029');p.write_text(s,encoding='utf-8')
