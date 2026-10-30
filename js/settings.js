@@ -6,13 +6,24 @@
   const homeHeader=document.querySelector('.phone>header');
   const nav=document.querySelector('.bottom-nav');
   let active='main',entry;
+  let libraryLoginOrigin=false;
+  function returnToLibrary(){
+    libraryLoginOrigin=false;panel.hidden=true;
+    phone.classList.remove('settings-open','settings-subpage');phone.classList.add('library-open');
+    phone.dataset.appearance='light';document.querySelector('#library-panel').hidden=false;
+    main.inert=true;homeHeader.inert=true;nav.inert=false;selectNav('我聽');
+    window.dispatchEvent(new Event('demo-account-changed'));
+    document.querySelector('#library-login-open')?.focus({preventScroll:true});
+  }
+  const pageOpeners=new Map();
   const offlineArea=panel.querySelector('#download-empty');
   const offlineEmptyMarkup=offlineArea.innerHTML;
   function refreshDownloads(){
     let keys=[];try{keys=JSON.parse(localStorage.getItem('jinfm-demo-downloads')||'[]')}catch{}
     const purchased=panel.querySelector('#download-purchased').getAttribute('aria-selected')==='true';
     const grouped=new Map();keys.forEach(key=>{const id=key.split(':')[0];grouped.set(id,(grouped.get(id)||0)+1)});
-    const rows=purchased?[...grouped].map(([id,count])=>({course:all.find(c=>c.img===id),count})).filter(x=>x.course):[];
+    const borrowed=panel.querySelector('#download-borrowed').getAttribute('aria-selected')==='true';
+    const rows=[...grouped].filter(([id])=>borrowed?id.startsWith('borrow/'):purchased&&!id.startsWith('borrow/')).map(([id,count])=>({course:all.find(c=>c.img===id),count})).filter(x=>x.course);
     offlineArea.classList.toggle('has-downloads',rows.length>0);
     offlineArea.innerHTML=rows.length?rows.map(({course:c,count})=>`<article class="library-row"><button data-course="${c.img}" aria-label="查看${esc(c.title)}"><img src="assets/${c.img}.jpg" alt="${esc(c.title)}"></button><div><h2>${esc(c.title)}</h2><p>已下載 ${count} 集</p><button data-offline-delete="${c.img}">刪除下載</button></div></article>`).join(''):offlineEmptyMarkup;
   }
@@ -37,6 +48,9 @@
     });
   }
   function showPage(name,trigger){
+    if(!pages.some(p=>p.dataset.settingsPage===name))return;
+    window.accountDemo?.preparePage(name);
+    if(trigger)pageOpeners.set(name,trigger);
     active=name;entry=trigger||entry;
     pages.forEach(p=>p.hidden=p.dataset.settingsPage!==name);
     phone.classList.toggle('settings-subpage',name!=='main');
@@ -45,6 +59,14 @@
     page.querySelector('[data-settings-back]')?.focus({preventScroll:true});
     if(name==='downloads')refreshDownloads();
   }
+  window.addEventListener('settings-demo-navigate',event=>{
+    if(libraryLoginOrigin&&event.detail.page==='main'){returnToLibrary();return}
+    showPage(event.detail.page,event.detail.trigger);
+  });
+  window.addEventListener('open-library-login',()=>{
+    libraryLoginOrigin=true;document.querySelector('#library-panel').hidden=true;phone.classList.remove('library-open');
+    openSettings();showPage('login');
+  });
   function openSettings(){
     panel.hidden=false;phone.classList.add('settings-open');
     main.inert=true;homeHeader.inert=true;
@@ -61,10 +83,13 @@
   });
   panel.addEventListener('click',e=>{
     const target=e.target.closest('[data-settings-to]');
+    if(target?.dataset.settingsTo==='login'&&window.accountDemo?.loggedIn){window.dispatchEvent(new Event('open-coupon-wallet'));return}
     if(target){showPage(target.dataset.settingsTo,target);return}
     if(e.target.closest('[data-settings-back]')){
-      const destination='main';
-      showPage(destination);if(destination==='main')entry?.focus({preventScroll:true});return;
+      if(active==='login'&&libraryLoginOrigin){returnToLibrary();return}
+      const previous=active;
+      const destination=e.target.closest('[data-settings-back]').dataset.settingsBack||'main';
+      showPage(destination);pageOpeners.get(previous)?.focus({preventScroll:true});return;
     }
     const appearance=e.target.closest('[data-appearance]');
     if(appearance){prefs.theme=appearance.dataset.appearance;savePrefs();applyAppearance();return}
@@ -73,7 +98,7 @@
   const wifi=panel.querySelector('#wifi-switch');
   wifi.setAttribute('aria-checked',prefs.wifi);
   wifi.onclick=()=>{prefs.wifi=!prefs.wifi;wifi.setAttribute('aria-checked',prefs.wifi);savePrefs()};
-  panel.querySelector('#wallet-refresh').onclick=()=>toast('餘額已更新，目前為 0 點');
+  panel.querySelector('#wallet-refresh').onclick=()=>toast(`餘額已更新，目前為 ${window.accountDemo?.loggedIn?window.accountDemo.balance:0} 點`);
   panel.querySelector('#push-preference').onclick=()=>toast('請至裝置的系統設定管理通知權限');
   panel.querySelector('#share-app').onclick=async()=>{
     const url='https://learning.udn.com/jinfm';

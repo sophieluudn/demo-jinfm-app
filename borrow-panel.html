@@ -1,0 +1,30 @@
+<section id="borrow-panel" aria-label="借聽" hidden>
+  <h1 tabindex="-1">借聽</h1>
+  <label class="borrow-search"><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input id="borrow-search" type="search" placeholder="搜尋圖書館" aria-label="搜尋圖書館"></label>
+  <div class="borrow-scroll">
+    <section id="borrow-recent" aria-labelledby="borrow-recent-title" hidden><h2 id="borrow-recent-title">最近使用</h2><div id="borrow-recent-list"></div></section>
+    <h2>圖書館合作單位</h2>
+    <div id="borrow-partners"></div>
+    <p id="borrow-no-results" hidden>找不到符合的圖書館</p>
+  </div>
+</section>
+<section id="borrow-school-panel" aria-label="學校借聽課程" hidden>
+  <button id="borrow-school-back" aria-label="返回借聽列表"><i class="ph ph-caret-left" aria-hidden="true"></i></button>
+  <div class="borrow-school-heading"><h1 id="borrow-school-name"></h1><button id="borrow-school-search-toggle" aria-label="搜尋此學校課程" aria-expanded="false"><i class="ph ph-magnifying-glass" aria-hidden="true"></i></button><button id="borrow-school-account" aria-label="借聽帳號"><i class="ph ph-user-circle" aria-hidden="true"></i></button></div>
+  <label class="borrow-search borrow-course-search" hidden><i class="ph ph-magnifying-glass" aria-hidden="true"></i><input id="borrow-course-search" type="search" placeholder="搜尋課程" aria-label="搜尋此學校課程"></label>
+  <nav id="borrow-categories" aria-label="借聽課程分類"></nav>
+  <div id="borrow-school-courses"></div>
+</section>
+<section id="borrow-info-panel" aria-labelledby="borrow-info-title" hidden>
+  <div class="borrow-info-header"><button id="borrow-info-close" aria-label="關閉服務使用說明"><i class="ph ph-x" aria-hidden="true"></i></button><h1 id="borrow-info-title">服務使用說明</h1></div>
+  <div id="borrow-info-content" tabindex="0"></div>
+</section>
+<div id="borrow-welcome" hidden>
+  <section class="borrow-welcome-card" role="dialog" aria-modal="true" aria-labelledby="borrow-welcome-title" aria-describedby="borrow-welcome-description">
+    <button id="borrow-welcome-close" aria-label="關閉借聽服務介紹"><i class="ph ph-x" aria-hidden="true"></i></button>
+    <img src="assets/borrow-welcome.png" alt="戴著耳機的鯨魚在窗邊聆聽">
+    <h2 id="borrow-welcome-title">歡迎使用借聽服務</h2>
+    <p id="borrow-welcome-description">在這裡可以聆聽〈一刻鯨選〉的合作夥伴，提供給你的各式主題內容</p>
+    <button id="borrow-welcome-start">開始使用</button>
+  </section>
+</div>

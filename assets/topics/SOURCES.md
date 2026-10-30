@@ -1,0 +1,1 @@
+Homepage marketing sections and courses: https://lab8-learning.udn.com/jinfm and /jinfm/courses/{id}. Snapshot 2026-10-30. Compact homepage sections and sections with an explicit more link show a final See more card. Credentials are read from environment variables and not saved.

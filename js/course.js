@@ -20,8 +20,23 @@
     ['中國古美術走向世界的引水人？文物大盜盧芹齋','2022/04/15','09:49'],
     ['英國攝影師的晚清殘影——湯姆生東方尋奇','2022/04/15','08:36']
   ];
-  function isOwned(){try{return selected.img==='east-west'||JSON.parse(localStorage.getItem('jinfm-demo-purchases')||'[]').includes(selected.img)}catch{return selected.img==='east-west'}}
-  function currentEpisodes(){const known=selected.img==='palace'?knownEpisodes:selected.img==='east-west'?eastWestEpisodes:[['【精華試聽】'+selected.title,'2026/05/19','03:34']];return Array.from({length:Math.max(1,selected.episodes)},(_,i)=>known[i]||[`單元 ${String(i+1).padStart(2,'0')}：${selected.title}（示範）`,'2026/05/19','10:00'])}
+  let courseB2B=false,borrowSchool='';
+  const borrowEpisodes=[
+    ['皇帝、總統、將軍們的「幕後推手」','2020/01/07','11:30'],
+    ['憤怒的臺灣青年在哪裡？','2020/01/07','12:07'],
+    ['當代意見領袖：社會影響力的四個象限','2020/01/07','10:24']
+  ];
+  const borrowedCourses=new Set();
+  const borrowKey=()=>borrowSchool+':'+selected?.img;
+  function isOwned(){if(courseB2B)return borrowedCourses.has(borrowKey());try{return selected.img==='east-west'||JSON.parse(localStorage.getItem('jinfm-demo-purchases')||'[]').includes(selected.img)}catch{return selected.img==='east-west'}}
+  const episodeAvailable=index=>isOwned()||(!courseB2B&&index===1);
+  function refreshBorrow(){
+    const borrowed=borrowedCourses.has(borrowKey()),available=borrowed?99:100;
+    document.querySelector('#course-borrow-count').textContent=`可借 ${available}`;
+    document.querySelector('#course-borrow').textContent=borrowed?'已借聽':`立即借聽 (${available})`;
+    document.querySelector('#course-borrow').disabled=borrowed;
+  }
+  function currentEpisodes(course=selected){const known=course.img==='borrow/course-62'?borrowEpisodes:course.img==='palace'?knownEpisodes:course.img==='east-west'?eastWestEpisodes:[['【精華試聽】'+course.title,'2026/05/19','03:34']];return Array.from({length:Math.max(1,course.episodes)},(_,i)=>known[i]||[`單元 ${String(i+1).padStart(2,'0')}：${course.title}（示範）`,'2026/05/19','10:00'])}
   const mini=document.querySelector('#mini-player');
   const seek=document.querySelector('#mini-seek');
   let playback=null,playbackTimer,lastTick=0,currentTranscriptIndex=1;
@@ -35,9 +50,9 @@
       const active=!!playback&&playback.course===selected?.img&&playback.index===index;
       row.classList.toggle('episode-active',active);
       button.classList.toggle('is-playing',active&&playback.playing);
-      const available=index===1||isOwned();
+      const available=episodeAvailable(index);
       button.innerHTML=icon(active&&playback.playing?'pause':available?'play-circle':'lock-simple',active&&playback.playing||!available);
-      button.setAttribute('aria-label',`${active&&playback.playing?'暫停':available?'播放本集':'尚未購買'}：${currentEpisodes()[index-1]?.[0]||''}`);
+      button.setAttribute('aria-label',`${active&&playback.playing?'暫停':available?'播放本集':courseB2B?'尚未借聽':'尚未購買'}：${currentEpisodes()[index-1]?.[0]||''}`);
       const time=row.querySelector('.episode-meta>span');
       if(time)time.textContent=active?`${formatTime(playback.elapsed)}/${formatTime(playback.duration)}`:currentEpisodes()[index-1]?.[2]||'';
     });
@@ -65,16 +80,17 @@
       refreshPlayback();
     },500);
   }
-  function recordPlayback(){if(playback){const c=all.find(c=>c.img===playback.course)||selected;window.dispatchEvent(new CustomEvent('demo-playback-start',{detail:{...c,episodeTitle:playback.title,duration:formatTime(playback.duration),elapsed:formatTime(playback.elapsed)}}))}}
+  function recordPlayback(){if(playback){const c=all.find(c=>c.img===playback.course)||window.searchCourses.find(c=>c.img===playback.course)||selected;window.dispatchEvent(new CustomEvent('demo-playback-start',{detail:{...c,episodeTitle:playback.title,duration:formatTime(playback.duration),elapsed:formatTime(playback.elapsed)}}))}}
   function togglePlayback(){if(!playback)return;if(playback.elapsed>=playback.duration)playback.elapsed=0;playback.playing=!playback.playing;runPlayback();refreshPlayback();recordPlayback()}
-  function playEpisode(index){
+  function playEpisode(index,course=selected,preview=false){
+    if(courseB2B&&course===selected&&!preview&&!isOwned()){toast('立即借聽後即可聆聽此集');return}
     if(index!==1&&!isOwned()){toast('購買課程後即可聆聽此集');return}
-    if(playback?.course===selected.img&&playback.index===index){togglePlayback();return}
-    recordPlayback();const episode=currentEpisodes()[index-1];if(!episode)return;
+    if(playback?.course===course.img&&playback.index===index){togglePlayback();return}
+    recordPlayback();const episode=currentEpisodes(course)[index-1];if(!episode)return;
     const [minutes,seconds]=episode[2].split(':').map(Number);
-    playback={course:selected.img,index,title:episode[0],author:selected.author,duration:minutes*60+seconds,elapsed:0,playing:true};
+    playback={course:course.img,index,title:episode[0],author:course.author,duration:minutes*60+seconds,elapsed:0,playing:true};
     runPlayback();refreshPlayback();
-    window.dispatchEvent(new CustomEvent('demo-playback-start',{detail:{...selected,episodeTitle:episode[0],duration:episode[2],elapsed:'00:00'}}));
+    window.dispatchEvent(new CustomEvent('demo-playback-start',{detail:{...course,episodeTitle:episode[0],duration:episode[2],elapsed:'00:00'}}));
   }
   document.querySelector('#mini-toggle').onclick=togglePlayback;
   document.querySelector('#mini-close').onclick=()=>{recordPlayback();clearInterval(playbackTimer);playback=null;document.querySelector('#mini-extra-controls').hidden=true;document.querySelector('#mini-expand').setAttribute('aria-expanded','false');refreshPlayback()};
@@ -118,7 +134,7 @@
     },240);
   }
   let selected,opener,descending=false,backgroundState=[];
-  const background=()=>[...document.querySelectorAll('.phone>header,#home-scroll,.bottom-nav,#search-panel,#library-panel,#settings-panel')];
+  const background=()=>[...document.querySelectorAll('.phone>header,#home-scroll,.bottom-nav,#search-panel,#library-panel,#settings-panel,#borrow-panel,#borrow-school-panel,#category-list-panel,#category-directory-panel,#topic-panel,#subscription-area')];
   function syncFavorite(){headerFavorite.setAttribute('aria-pressed',saved.has(selected.img));headerFavorite.innerHTML=icon('heart',saved.has(selected.img))}
   function renderCatalog(){
     const episodes=currentEpisodes();
@@ -126,10 +142,10 @@
     indexed=indexed.slice(Number(range.value)||0,(Number(range.value)||0)+20);
     if(descending)indexed.reverse();
     catalog.innerHTML=indexed.length?indexed.map(e=>{
-      const available=e.index===1||isOwned();
+      const available=episodeAvailable(e.index);
       const downloading=job?.course===selected.img&&job.queue[job.done]===e.index;
       const downloaded=completed.has(downloadKey(e.index));
-      return `<article class="episode"><button class="episode-status ${available?'preview':''}" data-episode="${e.index}" aria-label="${available?'播放本集':'尚未購買'}：${esc(e.title)}">${icon(available?'play-circle':'lock-simple',!available)}</button><div class="episode-main"><h2>${String(e.index).padStart(2,'0')} ${esc(e.title)}</h2><div class="episode-meta"><time>${e.date}</time>${icon('play')}<span>${e.duration}</span>${available?`<div class="episode-actions"><button class="${downloading?'downloading':downloaded?'downloaded':''}" data-course-audio="${e.index}" aria-label="${downloading?'取消下載':downloaded?'已下載':'下載音頻'}：${esc(e.title)}">${icon(downloading?'stop-circle':downloaded?'check-circle':'download-simple')}</button><button data-course-transcript="${e.index}" aria-label="開啟文稿：${esc(e.title)}">${icon('article')}</button></div>`:''}</div></div></article>`;
+      return `<article class="episode"><button class="episode-status ${available?'preview':''}" data-episode="${e.index}" aria-label="${available?'播放本集':courseB2B?'尚未借聽':'尚未購買'}：${esc(e.title)}">${icon(available?'play-circle':'lock-simple',!available)}</button><div class="episode-main"><h2>${String(e.index).padStart(2,'0')} ${esc(e.title)}</h2><div class="episode-meta"><time>${e.date}</time>${icon('play')}<span>${e.duration}</span>${available?`<div class="episode-actions"><button class="${downloading?'downloading':downloaded?'downloaded':''}" data-course-audio="${e.index}" aria-label="${downloading?'取消下載':downloaded?'已下載':'下載音頻'}：${esc(e.title)}">${icon(downloading?'stop-circle':downloaded?'check-circle':'download-simple')}</button><button data-course-transcript="${e.index}" aria-label="開啟文稿：${esc(e.title)}">${icon('article')}</button></div>`:''}</div></div></article>`;
     }).join(''):'<p class="catalog-empty">此範圍沒有課程單元</p>';
     document.querySelector('#course-delete-downloads').disabled=![...completed].some(key=>key.startsWith(selected.img+':'));
     refreshPlayback();
@@ -144,6 +160,12 @@
   }
   function openCourse(id,button){
     selected=all.find(c=>c.img===id)||window.searchCourses.find(c=>c.img===id);if(!selected)return;
+    courseB2B=!!button?.closest('#borrow-school-panel');
+    borrowSchool=courseB2B?document.querySelector('#borrow-school-panel').dataset.school:'';
+    panel.classList.toggle('course-2b',courseB2B);
+    document.querySelector('#course-borrow').hidden=!courseB2B;
+    document.querySelector('#course-borrow-availability').hidden=!courseB2B;
+    if(courseB2B)refreshBorrow();
     opener=button;panel.hidden=false;backgroundState=background().map(el=>[el,el.inert]);background().forEach(el=>el.inert=true);
     document.querySelector('.phone').classList.add('course-open');
     panel.classList.toggle('course-owned',isOwned());
@@ -163,12 +185,17 @@
     document.querySelector('#course-download-size').hidden=id!=='palace';
     if(id==='east-west'){document.querySelector('#course-download-size').hidden=false;document.querySelector('#course-download-size').textContent='47 MB'}
     else document.querySelector('#course-download-size').textContent='237 MB';
+    if(courseB2B){document.querySelector('#course-download-size').hidden=false;document.querySelector('#course-download-size').textContent='38 MB'}
     syncFavorite();renderCatalog();switchTab(id==='poetry'?'intro':'catalog');scrollArea.scrollTop=0;
     panel.classList.remove('course-is-scrolled');document.querySelector('#course-back').focus({preventScroll:true});
     updateProgress();
   }
   function closeCourse(){panel.hidden=true;document.querySelector('.phone').classList.remove('course-open');backgroundState.forEach(([el,wasInert])=>el.inert=wasInert);opener?.focus({preventScroll:true})}
-  document.addEventListener('click',e=>{const button=e.target.closest('[data-course]');if(button)openCourse(button.dataset.course,button)});
+  document.addEventListener('click',e=>{
+    const play=e.target.closest('[data-library-play]');
+    if(play){const course=all.find(c=>c.img===play.dataset.libraryPlay)||window.searchCourses.find(c=>c.img===play.dataset.libraryPlay);if(course)playEpisode(1,course);return}
+    const button=e.target.closest('[data-course]');if(button)openCourse(button.dataset.course,button);
+  });
   document.querySelector('#course-back').onclick=closeCourse;
   headerFavorite.onclick=()=>{
     saved.has(selected.img)?saved.delete(selected.img):saved.add(selected.img);
@@ -206,7 +233,9 @@
     const audio=e.target.closest('[data-course-audio]');
     if(audio){const index=Number(audio.dataset.courseAudio);if(job?.course===selected.img&&job.queue[job.done]===index)cancelDownload();else if(completed.has(downloadKey(index)))toast('此音頻已下載');else startDownload([index])}
     if(e.target.closest('#course-download-all')){
-      startDownload(currentEpisodes().map((_,i)=>i+1).slice(Number(range.value)||0,(Number(range.value)||0)+20).filter(i=>i===1||isOwned()));
+      const downloadable=currentEpisodes().map((_,i)=>i+1).slice(Number(range.value)||0,(Number(range.value)||0)+20).filter(episodeAvailable);
+      if(!downloadable.length){toast('立即借聽後即可下載音頻');return}
+      startDownload(downloadable);
     }
     const transcript=e.target.closest('[data-course-transcript]');
     if(transcript)openTranscript(Number(transcript.dataset.courseTranscript),transcript);
@@ -228,7 +257,12 @@
   function closeTranscript(){transcriptPanel.hidden=true;panel.inert=false;document.querySelector('.phone').classList.remove('transcript-open');transcriptOpener?.focus({preventScroll:true})}
   document.querySelector('#transcript-back').onclick=closeTranscript;
   document.querySelector('#transcript-play').onclick=()=>playEpisode(currentTranscriptIndex);
-  document.querySelector('#course-trial').onclick=()=>playEpisode(1);
+  document.querySelector('#course-trial').onclick=()=>playEpisode(1,selected,true);
+  document.querySelector('#course-borrow').onclick=()=>{
+    if(!courseB2B||borrowedCourses.has(borrowKey()))return;
+    borrowedCourses.add(borrowKey());refreshBorrow();renderCatalog();
+    toast('已借聽，可在目錄播放課程');
+  };
   window.addEventListener('demo-purchased',e=>{if(selected?.img===e.detail.id){panel.classList.add('course-owned');document.querySelector('#course-buy').disabled=true;renderCatalog()}});
   document.querySelector('#course-buy').onclick=()=>window.dispatchEvent(new CustomEvent('course-purchase',{detail:{course:selected}}));
   document.querySelector('#course-gift').onclick=()=>window.dispatchEvent(new CustomEvent('course-gift',{detail:{course:selected}}));

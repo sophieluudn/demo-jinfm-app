@@ -1,0 +1,12 @@
+#banner-track{display:flex;width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x pan-y;user-select:none;cursor:grab;border-radius:2px}
+#banner-track::-webkit-scrollbar{display:none}
+#banner-track .hero-course{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always}
+#banner-track .hero-course img{width:100%;height:auto;aspect-ratio:5/2;object-fit:contain;border-radius:2px}
+#banner-track.dragging{scroll-snap-type:none;cursor:grabbing}#banner-track.dragging button{cursor:grabbing}
+.hero{position:relative;padding-top:4px}
+.phone:not(.scrolled)>header{height:92px;padding-bottom:5px}
+.banner-controls{display:flex;align-items:center;justify-content:center;position:absolute;left:15px;right:15px;bottom:20px;height:20px;margin:0;pointer-events:none}
+.banner-controls button{pointer-events:auto}
+.banner-dots{display:flex;align-items:center;gap:1px}.banner-dots button{width:19px;height:20px;padding:6px;display:flex;align-items:center;justify-content:center}.banner-dots span{display:block;width:6px;height:6px;border-radius:50%;background:#ccd7d9}.banner-dots [aria-pressed="true"] span{background:#196e80}
+#banner-autoplay{position:absolute;right:0;top:0;display:flex;align-items:center;justify-content:center;width:24px;height:20px;padding:0;color:#196e80;font-size:13px}
+@media(prefers-reduced-motion:reduce){#banner-track{scroll-behavior:auto}}

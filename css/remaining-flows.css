@@ -16,3 +16,6 @@
 .gift-result{padding:18px 0}.gift-result h3{font-size:16px;font-weight:500}.gift-result p{font-size:12px;color:#777}.gift-result input{width:100%;border:1px solid #ddd;padding:10px;font-size:13px;box-sizing:border-box}.gift-result button{background:#19778c;color:#fff;padding:8px 15px;border-radius:4px;font-size:13px}.checkout-footer>button:disabled{opacity:.5;cursor:default}
 .download-empty.has-downloads{margin-top:20px;text-align:left}.download-empty.has-downloads>img{display:none}.has-downloads .library-row img{width:100px;height:70px}.has-downloads .library-row button[data-offline-delete]{padding:5px 0;color:#19778c;font-size:12px}
 .checkout-course{margin-bottom:8px}.library-filters[hidden],.checkout-details [hidden]{display:none!important}
+
+.library-row .result-bottom>button{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;flex-shrink:0;font-size:24px;line-height:1}
+.library-row .result-bottom>button i{display:block;line-height:1}

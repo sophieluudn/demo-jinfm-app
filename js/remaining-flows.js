@@ -15,28 +15,47 @@
   const chosenCoupon=()=>availableCoupons().find(c=>c.id===selectedCoupon);
   const discountAmount=()=>coupon&&chosenCoupon()?Math.min(Number(course.price),chosenCoupon().amount):0;
   const persistCoupons=()=>localStorage.setItem(couponStorageKey,JSON.stringify(wallet));
+  window.addEventListener('demo-topup-bonus',event=>{
+    const amount=Number(event.detail.amount);if(!Number.isFinite(amount)||amount<=0)return;
+    wallet.self.push({id:'topup-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),amount,expires:'示範期限未設定',used:false});
+    persistCoupons();
+  });
   let purchased=new Set(readState('jinfm-demo-purchases',['east-west']));
-  let libraryMain='list',filter='purchased',course=null,coupon=false,selectedCoupon=null,fromGift=false;
+  let libraryMain='history',filter='purchased',course=null,coupon=false,selectedCoupon=null,fromGift=false;
   let origin,originFocus;
   function setNav(name){nav.querySelectorAll('[data-nav]').forEach(b=>{const yes=b.dataset.nav===name;b.classList.toggle('selected',yes);if(yes)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');const i=b.querySelector('i');if(['首頁','我聽','設定'].includes(b.dataset.nav))i.className=`${yes?'ph-fill':'ph'} ph-${{'首頁':'house','我聽':'headphones','設定':'user'}[b.dataset.nav]}`})}
-  function openLibrary(section='purchased'){
-    filter=section;libraryMain='list';library.hidden=false;
+  function openLibrary(section='history'){
+    filter=section==='history'?'purchased':section;libraryMain=section==='history'?'history':'list';library.hidden=false;
     document.querySelector('#settings-panel').hidden=true;phone.classList.remove('settings-open','settings-subpage');phone.dataset.appearance='light';
     document.querySelector('#home-scroll').inert=true;document.querySelector('.phone>header').inert=true;phone.classList.add('library-open');setNav('我聽');renderLibrary();
   }
   function closeLibrary(){library.hidden=true;phone.classList.remove('library-open');document.querySelector('#home-scroll').inert=false;document.querySelector('.phone>header').inert=false;setNav('首頁')}
   function renderLibrary(){
+    library.classList.toggle('library-guest',!window.accountDemo?.loggedIn);
     document.querySelectorAll('[data-library-main]').forEach(b=>b.setAttribute('aria-selected',b.dataset.libraryMain===libraryMain));
     document.querySelector('.library-filters').hidden=libraryMain==='history';
     document.querySelectorAll('[data-library-filter]').forEach(b=>b.classList.toggle('active',b.dataset.libraryFilter===filter));
     const content=document.querySelector('#library-content');content.classList.toggle('library-history',libraryMain==='history');
+    const loginRequired=libraryMain==='list'&&!window.accountDemo?.loggedIn&&filter!=='subscribed';
+    const subscriptionEmpty=libraryMain==='list'&&filter==='subscribed';
+    content.classList.toggle('library-gated',loginRequired||subscriptionEmpty);
+    if(loginRequired||subscriptionEmpty){
+      content.innerHTML=subscriptionEmpty?'<div class="library-gate library-gate-subscription"><img src="assets/library-subscription-empty.png" alt="戴耳機的鯨魚與訂閱主題清單"><p>尚未收藏專區中任何主題喔</p><button id="library-subscription-open">前往訂閱專區</button></div>':'<div class="library-gate library-gate-login"><img src="assets/library-login-empty.png" alt="戴耳機的鯨魚從門口探出頭"><p>請您先登入！</p><button id="library-login-open">登入</button></div>';
+      return;
+    }
     let rows=libraryMain==='history'?readState('jinfm-demo-history',[]):filter==='favorites'?all.filter(c=>saved.has(c.img)):filter==='purchased'?all.filter(c=>purchased.has(c.img)):[];
     const toolbar=libraryMain==='history'&&rows.length?'<div class="library-history-toolbar"><button id="history-clear"><i class="ph ph-trash"></i>全部清除</button></div>':'';
-    content.innerHTML=toolbar+(rows.length?rows.map(c=>`<article class="library-row"><button data-course="${c.img}" aria-label="查看${esc(c.title)}"><img src="assets/${c.img}.jpg" alt="${esc(c.title)}"></button><div><h2><span class="tag">${c.video?'影像':'聲音'}</span>${esc(c.episodeTitle||c.title)}</h2><p>${esc(libraryMain==='history'?c.title:c.author)}</p><p class="library-purchased">${libraryMain==='history'?(c.elapsed||'00:00')+' / '+(c.duration||'03:34'):filter==='purchased'?'已購買'+c.episodes+'集 / 共'+c.episodes+'集':c.episodes+'集'}</p>${filter==='favorites'&&libraryMain!=='history'?`<div class="result-bottom"><span class="price">${c.price}點</span><button class="favorite" data-favorite="${c.img}" aria-label="取消收藏${esc(c.title)}" aria-pressed="true">${icon('heart',true)}</button><button data-course="${c.img}" aria-label="試聽${esc(c.title)}">${icon('play-circle')}</button></div>`:''}</div></article>`).join(''):`<div class="library-empty"><img src="assets/${filter==='subscribed'?'downloads-empty.png':'search-empty.png'}" alt="空白聽單"><p>${libraryMain==='history'?'尚無閱聽紀錄':filter==='borrowed'?'尚未租借任何內容喔':filter==='subscribed'?'尚未訂閱任何內容喔':filter==='favorites'?'尚未收藏任何內容喔':'尚未購買任何內容喔'}</p><button id="library-browse">前往瀏覽內容</button></div>`);
+    content.innerHTML=toolbar+(rows.length?rows.map(c=>`<article class="library-row"><button data-course="${c.img}" aria-label="查看${esc(c.title)}"><img src="assets/${c.img}.jpg" alt="${esc(c.title)}"></button><div><h2><span class="tag">${c.video?'影像':'聲音'}</span>${esc(c.episodeTitle||c.title)}</h2><p>${esc(libraryMain==='history'?c.title:c.author)}</p><p class="library-purchased">${libraryMain==='history'?(c.elapsed||'00:00')+' / '+(c.duration||'03:34'):filter==='purchased'?'已購買'+c.episodes+'集 / 共'+c.episodes+'集':c.episodes+'集'}</p>${filter==='favorites'&&libraryMain!=='history'?`<div class="result-bottom"><span class="price">${c.price}點</span><button class="favorite" data-favorite="${c.img}" aria-label="取消收藏${esc(c.title)}" aria-pressed="true">${icon('heart',true)}</button><button data-library-play="${c.img}" aria-label="試聽${esc(c.title)}">${icon('play-circle')}</button></div>`:''}</div></article>`).join(''):`<div class="library-empty"><img src="assets/${filter==='subscribed'?'downloads-empty.png':'search-empty.png'}" alt="空白聽單"><p>${libraryMain==='history'?'尚無閱聽紀錄':filter==='borrowed'?'尚未租借任何內容喔':filter==='subscribed'?'尚未訂閱任何內容喔':filter==='favorites'?'尚未收藏任何內容喔':'尚未購買任何內容喔'}</p><button id="library-browse">前往瀏覽內容</button></div>`);
   }
-  nav.addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(!b)return;if(b.dataset.nav==='我聽')openLibrary();else if(b.dataset.nav==='訂閱')openLibrary('subscribed');else if(b.dataset.nav==='借聽')openLibrary('borrowed');else if(!library.hidden){library.hidden=true;phone.classList.remove('library-open');if(b.dataset.nav==='首頁')closeLibrary()}});
+  nav.addEventListener('click',e=>{const b=e.target.closest('[data-nav]');if(!b)return;if(b.dataset.nav==='我聽')openLibrary();else if(b.dataset.nav==='訂閱')window.openSubscriptionArea?.();else if(b.dataset.nav==='借聽')return;else if(!library.hidden){library.hidden=true;phone.classList.remove('library-open');if(b.dataset.nav==='首頁')closeLibrary()}});
   library.addEventListener('click',e=>{const main=e.target.closest('[data-library-main]');const tab=e.target.closest('[data-library-filter]');if(main){libraryMain=main.dataset.libraryMain;renderLibrary()}if(tab){filter=tab.dataset.libraryFilter;renderLibrary()}if(e.target.closest('#library-browse'))closeLibrary();if(e.target.closest('#history-clear')){localStorage.setItem('jinfm-demo-history','[]');renderLibrary()}});
   document.addEventListener('click',e=>{if(!library.hidden&&e.target.closest('[data-favorite]'))queueMicrotask(renderLibrary)});
+  library.addEventListener('click',e=>{
+    const login=e.target.closest('#library-login-open');
+    if(login)window.dispatchEvent(new CustomEvent('open-library-login',{detail:{trigger:login}}));
+    if(e.target.closest('#library-subscription-open'))window.openSubscriptionArea?.();
+  });
+  window.addEventListener('demo-account-changed',()=>{if(!library.hidden)renderLibrary()});
   function setFlow(open){phone.classList.toggle('flow-open',open);if(origin)origin.inert=open}
   function updateCheckout(){
     document.querySelector('#gift-result')?.remove();document.querySelector('#checkout-confirm').disabled=false;
