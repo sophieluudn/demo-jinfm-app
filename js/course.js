@@ -39,7 +39,7 @@
   function currentEpisodes(course=selected){const known=course.img==='borrow/course-62'?borrowEpisodes:course.img==='palace'?knownEpisodes:course.img==='east-west'?eastWestEpisodes:[['【精華試聽】'+course.title,'2026/05/19','03:34']];return Array.from({length:Math.max(1,course.episodes)},(_,i)=>known[i]||[`單元 ${String(i+1).padStart(2,'0')}：${course.title}（示範）`,'2026/05/19','10:00'])}
   const mini=document.querySelector('#mini-player');
   const seek=document.querySelector('#mini-seek');
-  let playback=null,playbackTimer,lastTick=0,currentTranscriptIndex=1;
+  let playback=null,playbackTimer,lastTick=0,currentTranscriptIndex=1,sleepTimeout=null,sleepAtEnd=false,autoplay=true;
   const formatTime=seconds=>`${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(Math.floor(seconds%60)).padStart(2,'0')}`;
   function refreshPlayback(){
     mini.hidden=!playback;
@@ -69,14 +69,21 @@
     mini.classList.toggle('paused',!playback.playing);
     document.querySelector('#mini-toggle').setAttribute('aria-label',playback.playing?'暫停':'播放');
     document.querySelector('#mini-toggle').innerHTML=icon(playback.playing?'pause':'play',true);
+    document.querySelector('#full-player-title').textContent=playback.title;
+    document.querySelector('#full-player-author').textContent=playback.author;
+    document.querySelector('#full-player-image').src=`assets/${playback.course}.jpg`;
+    document.querySelector('#full-player-elapsed').textContent=formatTime(playback.elapsed);
+    document.querySelector('#full-player-duration').textContent=formatTime(playback.duration);
+    const fullSeek=document.querySelector('#full-player-seek');fullSeek.max=playback.duration;fullSeek.value=Math.floor(playback.elapsed);fullSeek.style.setProperty('--progress',`${playback.elapsed/playback.duration*100}%`);
+    const fullToggle=document.querySelector('#full-player-toggle');fullToggle.setAttribute('aria-label',playback.playing?'暫停':'播放');fullToggle.innerHTML=icon(playback.playing?'pause':'play',true);
   }
   function runPlayback(){
     clearInterval(playbackTimer);lastTick=performance.now();
     if(!playback?.playing)return;
     playbackTimer=setInterval(()=>{
       const now=performance.now();
-      playback.elapsed=Math.min(playback.duration,playback.elapsed+(now-lastTick)/1000);lastTick=now;
-      if(playback.elapsed>=playback.duration){playback.playing=false;clearInterval(playbackTimer)}
+      playback.elapsed=Math.min(playback.duration,playback.elapsed+(now-lastTick)/1000*speeds[speedIndex]);lastTick=now;
+      if(playback.elapsed>=playback.duration){playback.playing=false;clearInterval(playbackTimer);if(autoplay&&!sleepAtEnd){const course=playback.courseData;if(playback.index<course.episodes&&(playback.index+1===1||isOwned())){playEpisode(playback.index+1,course);return}}sleepAtEnd=false}
       refreshPlayback();
     },500);
   }
@@ -88,20 +95,28 @@
     if(playback?.course===course.img&&playback.index===index){togglePlayback();return}
     recordPlayback();const episode=currentEpisodes(course)[index-1];if(!episode)return;
     const [minutes,seconds]=episode[2].split(':').map(Number);
-    playback={course:course.img,index,title:episode[0],author:course.author,duration:minutes*60+seconds,elapsed:0,playing:true};
+    playback={course:course.img,courseData:course,index,title:episode[0],author:course.author,duration:minutes*60+seconds,elapsed:0,playing:true};
     runPlayback();refreshPlayback();
     window.dispatchEvent(new CustomEvent('demo-playback-start',{detail:{...course,episodeTitle:episode[0],duration:episode[2],elapsed:'00:00'}}));
   }
   document.querySelector('#mini-toggle').onclick=togglePlayback;
   document.querySelector('#mini-close').onclick=()=>{recordPlayback();clearInterval(playbackTimer);playback=null;document.querySelector('#mini-extra-controls').hidden=true;document.querySelector('#mini-expand').setAttribute('aria-expanded','false');refreshPlayback()};
   seek.oninput=()=>{if(playback){playback.elapsed=Number(seek.value);lastTick=performance.now();refreshPlayback()}};
-  document.querySelector('#mini-expand').onclick=e=>{
-    const button=e.currentTarget;const expanded=button.getAttribute('aria-expanded')!=='true';
-    button.setAttribute('aria-expanded',expanded);button.setAttribute('aria-label',expanded?'收合播放控制':'展開播放控制');document.querySelector('#mini-extra-controls').hidden=!expanded;
-  };
+  const fullPlayer=document.querySelector('#full-player');
+  document.querySelector('#mini-expand').onclick=()=>{fullPlayer.hidden=false;document.querySelector('#mini-expand').setAttribute('aria-expanded','true')};
+  document.querySelector('#full-player-close').onclick=()=>{fullPlayer.hidden=true;document.querySelector('#mini-expand').setAttribute('aria-expanded','false')};
+  document.querySelector('#full-player-toggle').onclick=togglePlayback;
+  document.querySelector('#full-player-seek').oninput=e=>{if(playback){playback.elapsed=Number(e.target.value);lastTick=performance.now();refreshPlayback()}};
+  document.querySelector('#full-player-share').onclick=()=>toast('分享課程');
+  const speeds=[0.5,0.75,1,1.25,1.5,1.75,2];let speedIndex=2;
+  function changeEpisode(offset){if(!playback)return;const course=all.find(c=>c.img===playback.course)||window.searchCourses.find(c=>c.img===playback.course)||selected;const next=playback.index+offset;if(next<1||next>course.episodes){toast('沒有其他集數');return}playEpisode(next,course)}
+  document.querySelector('#full-player-prev').onclick=()=>changeEpisode(-1);
+  document.querySelector('#full-player-next').onclick=()=>changeEpisode(1);
   function skip(seconds){if(playback){playback.elapsed=Math.max(0,Math.min(playback.duration,playback.elapsed+seconds));lastTick=performance.now();refreshPlayback()}}
   document.querySelector('#mini-rewind').onclick=()=>skip(-15);
   document.querySelector('#mini-forward').onclick=()=>skip(15);
+  document.querySelector('#full-player-rewind').onclick=()=>skip(-15);
+  document.querySelector('#full-player-forward').onclick=()=>skip(15);
   const completed=new Set(JSON.parse(localStorage.getItem('jinfm-demo-downloads')||'[]'));
   const progress=document.querySelector('#course-download-progress');
   let downloadTimer,finishTimer,job=null,favoriteTimer;
@@ -257,6 +272,41 @@
   function closeTranscript(){transcriptPanel.hidden=true;panel.inert=false;document.querySelector('.phone').classList.remove('transcript-open');transcriptOpener?.focus({preventScroll:true})}
   document.querySelector('#transcript-back').onclick=closeTranscript;
   document.querySelector('#transcript-play').onclick=()=>playEpisode(currentTranscriptIndex);
+  const phone=document.querySelector('.phone');
+  const playerSheet=document.createElement('div');playerSheet.id='player-sheet';playerSheet.hidden=true;playerSheet.innerHTML='<div class="player-sheet-backdrop"></div><div class="player-sheet-wrap"><div class="player-sheet-card"><div class="player-sheet-title"></div><div class="player-sheet-options"></div></div><button class="player-sheet-close">關閉</button></div>';phone.append(playerSheet);
+  const sheetTitle=playerSheet.querySelector('.player-sheet-title'),sheetOptions=playerSheet.querySelector('.player-sheet-options');
+  let sleepChoice='關閉定時';
+  function hidePlayerSheet(){playerSheet.hidden=true}
+  playerSheet.querySelector('.player-sheet-close').onclick=hidePlayerSheet;playerSheet.querySelector('.player-sheet-backdrop').onclick=hidePlayerSheet;
+  function showPlayerSheet(kind){
+    sheetTitle.textContent=kind;sheetOptions.innerHTML='';
+    if(kind==='播放設定'){
+      const row=document.createElement('button');row.className='player-sheet-row';row.innerHTML=`<span>自動播放</span><span class="player-switch ${autoplay?'on':''}" aria-hidden="true"></span>`;row.setAttribute('role','switch');row.setAttribute('aria-checked',String(autoplay));row.onclick=()=>{autoplay=!autoplay;row.setAttribute('aria-checked',String(autoplay));row.querySelector('.player-switch').classList.toggle('on',autoplay)};sheetOptions.append(row);
+    }else{
+      const options=kind==='倍速播放'?speeds.map(s=>({label:s===1?'1x（正常倍速）':`${s===2?'2.0':s}x`,value:s})):['10分鐘','20分鐘','30分鐘','播完當集音頻','自定義','關閉定時'].map(label=>({label,value:label}));
+      options.forEach(({label,value})=>{const row=document.createElement('button');row.className='player-sheet-row';const checked=kind==='倍速播放'?speeds[speedIndex]===value:sleepChoice===value;row.innerHTML=`<span>${label}</span>${checked?'<span class="player-check">✓</span>':''}`;row.onclick=()=>{
+        if(kind==='倍速播放'){speedIndex=speeds.indexOf(value);lastTick=performance.now();document.querySelector('#full-player-speed span').textContent=`${value}x`;hidePlayerSheet();return}
+        let minutes=parseInt(value,10);if(value==='自定義'){const input=window.prompt('請輸入定時分鐘數','45');if(input===null)return;minutes=Number(input);if(!Number.isFinite(minutes)||minutes<=0){toast('請輸入有效的分鐘數');return}}
+        clearTimeout(sleepTimeout);sleepAtEnd=value==='播完當集音頻';sleepChoice=value;if(Number.isFinite(minutes))sleepTimeout=setTimeout(()=>{if(playback?.playing)togglePlayback();sleepChoice='關閉定時';sleepAtEnd=false},minutes*60000);hidePlayerSheet();
+      };sheetOptions.append(row)});
+    }
+    playerSheet.hidden=false;
+  }
+  document.querySelector('[data-player-tool="睡眠定時"]').onclick=()=>showPlayerSheet('睡眠定時');
+  document.querySelector('#full-player-speed').onclick=()=>showPlayerSheet('倍速播放');
+  document.querySelector('[data-player-tool="播放設定"]').onclick=()=>showPlayerSheet('播放設定');
+  document.querySelector('[data-player-tool="文稿"]').onclick=()=>{
+    if(!playback)return;
+    if(panel.hidden||selected?.img!==playback.course)openCourse(playback.course,document.querySelector('#mini-expand'));
+    fullPlayer.hidden=true;document.querySelector('#mini-expand').setAttribute('aria-expanded','false');openTranscript(playback.index,document.querySelector('#course-back'));
+  };
+  const playlist=document.createElement('section');playlist.id='player-playlist';playlist.hidden=true;playlist.setAttribute('aria-label','目錄');playlist.innerHTML='<div class="player-list-header"><button class="player-list-back" aria-label="返回播放器"><i class="ph ph-caret-left"></i></button><h2>目錄</h2><button class="player-list-sort" aria-label="切換排序"><i class="ph ph-sort-ascending"></i></button></div><div class="player-list-content"></div>';phone.append(playlist);
+  let playlistDescending=false;
+  function renderPlaylist(){const course=playback.courseData;const rows=currentEpisodes(course).map((episode,i)=>({episode,index:i+1}));if(playlistDescending)rows.reverse();playlist.querySelector('.player-list-content').innerHTML=rows.map(({episode,index})=>{const active=index===playback.index,available=index===1||(selected?.img===course.img&&isOwned());return `<button class="player-list-row ${active?'active':''}" data-player-episode="${index}"><span class="player-list-icon">${icon(active&&playback.playing?'speaker-high':available?'play-circle':'lock-simple',active||!available)}</span><span><span class="player-list-name">${String(index).padStart(2,'0')}　${esc(episode[0])}</span><span class="player-list-meta">${esc(episode[1])}　▷ ${esc(episode[2])}</span></span></button>`}).join('')}
+  document.querySelector('[data-player-tool="播放列表"]').onclick=()=>{if(playback){renderPlaylist();playlist.hidden=false}};
+  playlist.querySelector('.player-list-back').onclick=()=>{playlist.hidden=true};
+  playlist.querySelector('.player-list-sort').onclick=()=>{playlistDescending=!playlistDescending;renderPlaylist()};
+  playlist.querySelector('.player-list-content').onclick=e=>{const row=e.target.closest('[data-player-episode]');if(!row||!playback)return;const index=Number(row.dataset.playerEpisode);if(index!==1&&!(selected?.img===playback.course&&isOwned())){toast('購買課程後即可聆聽此集');return}playEpisode(index,playback.courseData);renderPlaylist()};
   document.querySelector('#course-trial').onclick=()=>playEpisode(1,selected,true);
   document.querySelector('#course-borrow').onclick=()=>{
     if(!courseB2B||borrowedCourses.has(borrowKey()))return;

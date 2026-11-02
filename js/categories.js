@@ -7,10 +7,10 @@
   const tabs=document.querySelector('#category-subtabs');
   const typeFilters=document.querySelector('#category-type-filters');
   const literary=new Set(catalogues[14]?.ids||[]);
-  const types=['說書','小說劇','有聲書','講座','聲音課程','影像課程'];
+  const types=['說書','說唱藝術','小說劇','有聲書','講座','聲音課程','影像課程'];
   courses.forEach(c=>{
     c.category=categories.find(main=>[main.id,...main.subcategory.map(sub=>sub.id)].some(id=>catalogues[id]?.ids.includes(c.id)))?.label||'文史哲';
-    c.type=c.video?'影像課程':literary.has(c.id)||[360,1931].includes(c.id)?'有聲書':/小說劇/.test(c.title)?'小說劇':/講座/.test(c.desc)?'講座':/導讀|說書/.test(c.title)?'說書':'聲音課程';
+    c.type=c.video?'影像課程':/說唱藝術/.test(c.title)?'說唱藝術':literary.has(c.id)||[360,1931].includes(c.id)?'有聲書':/小說劇/.test(c.title)?'小說劇':/講座/.test(c.desc)?'講座':/導讀|說書/.test(c.title)?'說書':'聲音課程';
     if(!all.some(existing=>existing.img===c.img))all.push(c);
   });
   let mainId=0,selectedId=0,selectedTypes=new Set(),opener=null,background=[];
@@ -25,8 +25,9 @@
   }
   function renderList(){
     document.querySelector('#category-list-title').textContent=main()?.label||'全部內容';
-    const items=[{id:mainId,label:'所有'},...(main()?.subcategory||[])];
-    tabs.innerHTML=items.map(c=>`<button role="tab" data-category-tab="${c.id}" aria-selected="${c.id===selectedId}" aria-controls="category-course-list">${esc(c.label)}(${count(c.id)})</button>`).join('');
+    const isAll=mainId===0;list.classList.toggle('category-all',isAll);
+    const items=isAll?categories:[{id:mainId,label:'所有'},...(main()?.subcategory||[])];
+    tabs.innerHTML=items.map(c=>`<button role="tab" data-category-tab="${c.id}" aria-selected="${c.id===selectedId}" aria-controls="category-course-list">${esc(c.label)}${isAll?'':`(${count(c.id)})`}</button>`).join('');
     typeFilters.innerHTML=types.map(type=>`<button data-course-type="${type}" aria-pressed="false"><span aria-hidden="true"></span>${type}</button>`).join('');
     renderRows();
     tabs.querySelector('[aria-selected="true"]')?.scrollIntoView({block:'nearest',inline:'nearest'});
@@ -56,7 +57,7 @@
   document.querySelector('#category-list-back').onclick=close;
   document.querySelector('#category-directory-open').onclick=openDirectory;
   document.querySelector('#category-directory-close').onclick=closeDirectory;
-  tabs.addEventListener('click',event=>{const button=event.target.closest('[data-category-tab]');if(button){selectedId=Number(button.dataset.categoryTab);renderRows();rows.scrollTop=0}});
+  tabs.addEventListener('click',event=>{const button=event.target.closest('[data-category-tab]');if(button){const id=Number(button.dataset.categoryTab);if(mainId===0){open(id,id,opener);return}selectedId=id;renderRows();rows.scrollTop=0}});
   tabs.addEventListener('keydown',event=>{
     const buttons=[...tabs.querySelectorAll('button')],index=buttons.indexOf(event.target);
     if(index<0||!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
