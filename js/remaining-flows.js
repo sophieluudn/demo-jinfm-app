@@ -57,6 +57,9 @@
   });
   window.addEventListener('demo-account-changed',()=>{if(!library.hidden)renderLibrary()});
   function setFlow(open){phone.classList.toggle('flow-open',open);if(origin)origin.inert=open}
+  let redeemPending=false,redeemedGift=null;
+  window.addEventListener('gift-message-save',persistCoupons);
+  const checkoutTotal=()=>Math.max(0,Number(course.price)-discountAmount());
   function updateCheckout(){
     document.querySelector('#gift-result')?.remove();document.querySelector('#checkout-confirm').disabled=false;
     document.querySelector('#checkout-course').innerHTML=`<div class="checkout-course"><img src="assets/${course.img==='palace'?'course-palace':course.img}.jpg" alt="${esc(course.title)}"><div><h3>${esc(course.title)}</h3><p>${esc(course.author)}</p><span>共 ${course.episodes} 集</span></div></div>`;
@@ -65,12 +68,27 @@
     document.querySelector('#checkout-discount').hidden=!coupon;document.querySelector('#checkout-discount span').textContent='−'+discount+' 點';
     document.querySelector('#checkout-coupon-label').textContent=coupon?'折抵 '+discount+' 點':'請選擇';
     document.querySelector('#checkout-coupon-checkbox').checked=coupon;document.querySelector('#checkout-coupon-checkbox').disabled=!availableCoupons().length;
-    document.querySelector('#checkout-confirm').textContent='立即兌換';
+    const balance=window.accountDemo?.balance||0,total=checkoutTotal(),insufficient=balance<total;
+    const action=fromGift?'兌換贈送朋友':'立即兌換';
+    checkout.querySelector('.flow-header h2').textContent=fromGift?'贈送朋友':'立即購買';
+    checkout.setAttribute('aria-label',fromGift?'贈送朋友':'立即購買');
+    checkout.querySelector('.checkout-footer>div>span').textContent='錢包餘額 '+balance+' 點';
+    checkout.classList.toggle('checkout-insufficient',insufficient);
+    document.querySelector('#checkout-confirm').textContent=insufficient?'立即加值':action;
+    checkout.querySelector('.checkout-footer>p').textContent=insufficient?`錢包餘額不足 ${total-balance} 點，請加值後再兌換`:`按下「${action}」即同意服務條款與紅包折抵規則`;
+    let note=checkout.querySelector('.checkout-gift-note');
+    if(!note){note=document.createElement('p');note.className='checkout-gift-note';checkout.querySelector('.checkout-plan').after(note)}
+    note.textContent='將會使用您的點數兌換此內容給朋友領取使用。';note.hidden=!fromGift;
   }
   function openCheckout(c,isGift=false){course=c;coupon=false;selectedCoupon=null;fromGift=isGift;origin=document.querySelector('#course-panel');if(!isGift)originFocus=document.activeElement;checkout.hidden=false;setFlow(true);updateCheckout();document.querySelector('#checkout-close').focus({preventScroll:true})}
   function closeCheckout(){checkout.hidden=true;coupons.hidden=true;checkout.inert=false;setFlow(false);originFocus?.focus({preventScroll:true})}
   window.addEventListener('course-purchase',e=>openCheckout(e.detail.course));
-  window.addEventListener('course-gift',e=>{couponGiftItem=null;document.querySelector('#gift-dialog p').textContent='將會使用您的點數兌換此內容給朋友領取使用。兌換期限為一年。';course=e.detail.course;origin=document.querySelector('#course-panel');originFocus=document.activeElement;gift.hidden=false;setFlow(true);document.querySelector('#gift-cancel').focus({preventScroll:true})});
+  window.addEventListener('course-gift',e=>{
+    couponGiftItem=null;course=e.detail.course;origin=document.querySelector('#course-panel');originFocus=document.activeElement;
+    document.querySelector('#gift-title').textContent='贈送朋友';
+    gift.querySelector('p').textContent='將會使用您的點數兌換此內容給朋友領取使用。兌換期限為一年。';
+    gift.hidden=false;setFlow(true);document.querySelector('#gift-cancel').focus({preventScroll:true});
+  });
   document.querySelector('#gift-cancel').onclick=()=>{gift.hidden=true;if(couponGiftItem){couponGiftItem=null;coupons.inert=false;return}setFlow(false);originFocus?.focus({preventScroll:true})};
   document.querySelector('#gift-confirm').onclick=()=>{gift.hidden=true;if(couponGiftItem){couponGiftItem.used=true;couponGiftItem.code='COUPON-DEMO-'+Date.now().toString(36).toUpperCase();persistCoupons();coupons.inert=false;origin=checkout.hidden?null:document.querySelector('#course-panel');setFlow(true);renderCoupons();toast('已建立示範贈送代碼：'+couponGiftItem.code);couponGiftItem=null}else openCheckout(course,true)};
   document.querySelector('#checkout-close').onclick=closeCheckout;
@@ -94,22 +112,26 @@
 
   document.querySelector('#coupon-list').onclick=e=>{
     const b=e.target.closest('[data-coupon]');if(b){if(couponStandalone){toast('請在立即購買頁選擇紅包折抵');return}selectedCoupon=b.dataset.coupon;coupon=true;coupons.hidden=true;checkout.inert=false;updateCheckout();document.querySelector('#checkout-coupon').focus({preventScroll:true})}
-    const send=e.target.closest('[data-coupon-gift]');if(send){couponGiftItem=wallet.gifts.find(c=>c.id===send.dataset.couponGift);if(!couponGiftItem||couponGiftItem.used)return;coupons.inert=true;gift.hidden=false;document.querySelector('#gift-title').textContent='贈送朋友';document.querySelector('#gift-dialog p').textContent='將建立「'+couponGiftItem.title+'」的示範贈送代碼。';document.querySelector('#gift-cancel').focus({preventScroll:true})}
+    const send=e.target.closest('[data-coupon-gift]');if(send){const ticket=wallet.gifts.find(c=>c.id===send.dataset.couponGift);if(!ticket||ticket.used)return;if(!ticket.code)ticket.code='GIFT-'+crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase();coupons.hidden=true;coupons.inert=false;window.dispatchEvent(new CustomEvent('open-gift-message',{detail:{ticket,trigger:document.querySelector('#course-gift')}}))}
   };
   window.addEventListener('open-coupon-wallet',()=>openCoupons(true));
   if(location.hash==='#coupons')openCoupons(true);
+  const success=document.createElement('div');success.id='checkout-success';success.hidden=true;success.setAttribute('role','status');success.innerHTML='<img src="assets/favorite-whale.png" alt=""><span>兌換成功</span>';checkout.append(success);
+  window.addEventListener('demo-account-changed',()=>{if(course&&!checkout.hidden&&!redeemPending)updateCheckout()});
+  window.addEventListener('checkout-topup-return',()=>{checkout.inert=false;updateCheckout();document.querySelector('#checkout-confirm').focus({preventScroll:true})});
   document.querySelector('#checkout-confirm').onclick=()=>{
+    if(redeemPending)return;
+    const total=checkoutTotal();
+    if((window.accountDemo?.balance||0)<total){checkout.inert=true;window.dispatchEvent(new Event('open-checkout-topup'));return}
+    redeemPending=true;document.querySelector('#checkout-confirm').disabled=true;
+    window.accountDemo.spend(total);
     if(coupon&&chosenCoupon()){chosenCoupon().used=true;persistCoupons()}
-    if(fromGift){
-      let result=document.querySelector('#gift-result');
-      if(!result){result=document.createElement('div');result.id='gift-result';result.className='gift-result';document.querySelector('.checkout-body').append(result)}
-      const code='GIFT-DEMO-'+Date.now().toString(36).toUpperCase();
-      result.innerHTML=`<h3>示範贈送代碼已建立</h3><input aria-label="示範贈送代碼" readonly value="${code}"><p>此代碼僅供畫面示範，不具實際兌換效力。</p><button id="gift-copy">複製代碼</button>`;
-      document.querySelector('#gift-copy').onclick=async()=>{try{await navigator.clipboard.writeText(code);toast('已複製示範贈送代碼')}catch{toast('請直接選取並複製代碼')}};
-      result.scrollIntoView({block:'nearest'});document.querySelector('#checkout-confirm').disabled=true;
-    }
-    else{purchased.add(course.img);localStorage.setItem('jinfm-demo-purchases',JSON.stringify([...purchased]));window.dispatchEvent(new CustomEvent('demo-purchased',{detail:{id:course.img}}));closeCheckout();toast('模擬兌換成功，可在「我聽」查看')}
+    if(fromGift){const expires=new Date();expires.setFullYear(expires.getFullYear()+1);redeemedGift={id:'gift-'+Date.now(),title:course.title,code:'GIFT-'+crypto.randomUUID().replaceAll('-','').slice(0,12).toUpperCase(),purchasedAt:new Date().toISOString(),expires:expires.toLocaleString('sv-SE',{timeZone:'Asia/Taipei'}).slice(0,16).replaceAll('-','/'),used:false};wallet.gifts.push(redeemedGift);persistCoupons()}
+    else{purchased.add(course.img);localStorage.setItem('jinfm-demo-purchases',JSON.stringify([...purchased]));window.dispatchEvent(new CustomEvent('demo-purchased',{detail:{id:course.img}}))}
+    success.querySelector('span').textContent=fromGift?'成功兌換內容':'兌換成功';
+    success.hidden=false;checkout.querySelector('.checkout-body').inert=true;document.querySelector('#checkout-close').disabled=true;
+    setTimeout(()=>{const giftTicket=fromGift?redeemedGift:null;success.hidden=true;checkout.querySelector('.checkout-body').inert=false;document.querySelector('#checkout-close').disabled=false;redeemPending=false;closeCheckout();if(giftTicket)window.dispatchEvent(new CustomEvent('open-gift-message',{detail:{ticket:giftTicket,trigger:originFocus}}))},1800);
   };
   window.addEventListener('demo-playback-start',e=>{const c=e.detail;let history=readState('jinfm-demo-history',[]).filter(x=>x.img!==c.img||x.episodeTitle!==c.episodeTitle);history.unshift(c);localStorage.setItem('jinfm-demo-history',JSON.stringify(history.slice(0,30)))});
-  document.addEventListener('keydown',e=>{if(!document.querySelector('#coupon-rules-overlay').hidden)return;if(e.key!=='Escape')return;if(!gift.hidden){e.stopImmediatePropagation();document.querySelector('#gift-cancel').click()}else if(!coupons.hidden){e.stopImmediatePropagation();document.querySelector('#coupon-back').click()}else if(!checkout.hidden){e.stopImmediatePropagation();closeCheckout()}},true);
+  document.addEventListener('keydown',e=>{if(!document.querySelector('#coupon-rules-overlay').hidden)return;if(e.key!=='Escape')return;if(!gift.hidden){e.stopImmediatePropagation();document.querySelector('#gift-cancel').click()}else if(!coupons.hidden){e.stopImmediatePropagation();document.querySelector('#coupon-back').click()}else if(!checkout.hidden){e.stopImmediatePropagation();if(!redeemPending&&!checkout.inert)closeCheckout()}},true);
 })();

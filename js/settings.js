@@ -6,7 +6,17 @@
   const homeHeader=document.querySelector('.phone>header');
   const nav=document.querySelector('.bottom-nav');
   let active='main',entry;
-  let libraryLoginOrigin=false;
+  let libraryLoginOrigin=false,checkoutTopupOrigin=false,checkoutTopupSettingsInert=false;
+  function returnToCheckout(){
+    checkoutTopupOrigin=false;panel.hidden=true;panel.inert=checkoutTopupSettingsInert;phone.classList.remove('settings-open','settings-subpage','checkout-topup-open');nav.inert=false;
+    phone.dataset.appearance='light';window.dispatchEvent(new Event('checkout-topup-return'));
+  }
+  window.addEventListener('open-checkout-topup',()=>{checkoutTopupSettingsInert=panel.inert;checkoutTopupOrigin=true;panel.hidden=false;panel.inert=false;phone.classList.add('settings-open','checkout-topup-open');showPage('topup');phone.dataset.appearance='light'});
+  window.addEventListener('demo-topup-completed',()=>{
+    if(checkoutTopupOrigin){returnToCheckout();return}
+    if(!panel.hidden&&active==='topup'){showPage('main');pageOpeners.get('topup')?.focus({preventScroll:true})}
+  });
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&checkoutTopupOrigin){event.stopImmediatePropagation();if(panel.querySelector('#topup-confirm').disabled)return;returnToCheckout()}},true);
   function returnToLibrary(){
     libraryLoginOrigin=false;panel.hidden=true;
     phone.classList.remove('settings-open','settings-subpage');phone.classList.add('library-open');
@@ -87,6 +97,7 @@
     if(target){showPage(target.dataset.settingsTo,target);return}
     if(e.target.closest('[data-settings-back]')){
       if(active==='login'&&libraryLoginOrigin){returnToLibrary();return}
+      if(active==='topup'&&checkoutTopupOrigin){returnToCheckout();return}
       const previous=active;
       const destination=e.target.closest('[data-settings-back]').dataset.settingsBack||'main';
       showPage(destination);pageOpeners.get(previous)?.focus({preventScroll:true});return;

@@ -118,11 +118,13 @@
         document.querySelector('#topup-balance').textContent=`${state.balance}點`;
         if(plan.bonus)window.dispatchEvent(new CustomEvent('demo-topup-bonus',{detail:{amount:plan.bonus}}));
       }
-      topupPending=false;topupPage.setAttribute('aria-busy','false');
-      topupPage.querySelector('.topup-plans').inert=false;topupPage.querySelector('[data-settings-back]').disabled=false;document.querySelector('#topup-confirm').disabled=false;
       topupStatus.querySelector('.topup-spinner').hidden=true;topupStatus.querySelector('img').hidden=false;
       document.querySelector('#topup-status-text').textContent=failed?'購買失敗':'購買成功';
-      topupResultTimer=setTimeout(()=>{topupStatus.hidden=true},2200);
+      topupResultTimer=setTimeout(()=>{
+        topupStatus.hidden=true;topupPending=false;topupPage.setAttribute('aria-busy','false');
+        topupPage.querySelector('.topup-plans').inert=false;topupPage.querySelector('[data-settings-back]').disabled=false;document.querySelector('#topup-confirm').disabled=false;
+        if(!failed)window.dispatchEvent(new Event('demo-topup-completed'));
+      },2200);
     },1200);
   };
   panel.addEventListener('click',event=>{
@@ -157,6 +159,6 @@
     if(!ids.length)return;
     state.devices=state.devices.filter(id=>!ids.includes(id));persist();renderDevices();toast(`已刪除 ${ids.length} 台裝置`);
   };
-  window.accountDemo={preparePage,login,get loggedIn(){return state.loggedIn},get balance(){return state.balance}};
+  window.accountDemo={preparePage,login,spend(points){if(!Number.isSafeInteger(points)||points<0||points>state.balance)return false;state.balance-=points;persist();renderAccount();return true},get loggedIn(){return state.loggedIn},get balance(){return state.balance}};
   renderAccount();
 })();

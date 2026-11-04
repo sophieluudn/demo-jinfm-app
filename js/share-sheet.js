@@ -24,9 +24,11 @@
   const actions=[['拷貝','copy'],['新增快速備忘錄','note-pencil'],['儲存到檔案','folder'],['檢視較多','caret-down']];
   let shareText='', opener;
   function notify(message){const el=document.querySelector('.toast');el.textContent=message;el.classList.add('visible');setTimeout(()=>el.classList.remove('visible'),2600)}
-  function close(){sheet.classList.remove('open');sheet.hidden=true;opener?.focus({preventScroll:true})}
+  function close(){sheet.classList.remove('open');sheet.hidden=true;const giftPage=document.querySelector('#gift-message-page');if(giftPage)giftPage.inert=false;opener?.focus({preventScroll:true})}
   actions.forEach(([name,icon])=>{const button=document.createElement('button');button.className='share-option';button.innerHTML=`<span class="share-action-icon"><i class="ph ph-${icon}"></i></span><span>${name}</span>`;button.onclick=async()=>{if(name==='拷貝'){try{await navigator.clipboard.writeText(shareText);close();notify('已複製分享內容')}catch{close();notify('無法複製，請稍後再試')}}else{close();notify(`${name}為示範功能`)}};sheet.querySelector('.share-actions').append(button)});
   function open(button, title){opener=button;shareText=`【一刻鯨選】${title}`;sheet.querySelector('#share-title-text').textContent=shareText;sheet.hidden=false;requestAnimationFrame(()=>sheet.classList.add('open'));sheet.querySelector('.share-close').focus({preventScroll:true})}
+  window.addEventListener('open-gift-share',event=>{open(event.detail.trigger,event.detail.title);shareText=event.detail.text;document.querySelector('#gift-message-page').inert=true});
+  sheet.addEventListener('keydown',event=>{if(event.key!=='Tab')return;const buttons=[...sheet.querySelectorAll('button')],first=buttons[0],last=buttons.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}});
   sheet.querySelector('.share-close').onclick=close;sheet.querySelector('.share-backdrop').onclick=close;
   document.querySelector('#course-share').onclick=e=>open(e.currentTarget,document.querySelector('#course-title').textContent);
   document.querySelector('#full-player-share').onclick=e=>open(e.currentTarget,document.querySelector('#full-player-title').textContent);
